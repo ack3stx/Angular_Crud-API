@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ProductsService } from '../../../core/services/products/products.service';
 import { CommonModule } from '@angular/common';
+import { Producto } from '../../../core/models/producto.model';
 
 @Component({
   selector: 'app-show',
@@ -8,8 +9,11 @@ import { CommonModule } from '@angular/common';
   templateUrl: './show.component.html',
   styleUrl: './show.component.css'
 })
-export class ShowComponent implements OnInit {
-  productos: any[] = [];
+
+export class ShowComponent implements OnInit //IMPLEMENTAMOS EL METODO ONINIT PARA
+ {
+  productos: Producto[] = [];
+
   //CREAMOS UN CONSTRUCTOR PARA INYECTAR EL SERVICIO
   constructor(public productService:ProductsService) {}
 

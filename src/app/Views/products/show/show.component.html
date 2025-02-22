@@ -1,14 +1,18 @@
-<table>
-    <thead>
-        <tr>
-            <th>Nombre</th>
-            <th>Precio</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr *ngFor="let producto of productos">
-        <td>{{ producto.nombre }}</td>
-        <td>{{ producto.precio }}</td>
-        </tr>
-    </tbody>
-</table>
+<div class="table-container">
+    <h2 class="table-title">Lista de Productos</h2>
+    <table class="custom-table">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Precio</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let producto of productos">
+            <td>{{ producto.nombre }}</td>
+            <td>{{ producto.precio }}</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+

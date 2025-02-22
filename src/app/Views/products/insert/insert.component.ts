@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormGroup, FormControl, Validators, ReactiveFormsModule } from '@angular/forms';
+import { ProductsService } from '../../../core/services/products/products.service';
 
 @Component({
   selector: 'app-insert',
@@ -10,24 +11,31 @@ import { FormGroup, FormControl, Validators, ReactiveFormsModule } from '@angula
   styleUrl: './insert.component.css'
 })
 export class InsertComponent {
-  formulario: FormGroup;
-  mensajeError: string = '';
-  mensajeExito: string = '';
+  NuevoProducto: FormGroup;
+  nombre: FormControl;
+  precio: FormControl
+ 
 
-  constructor() {
-    //INICIALIZAMOS EL FORMULARIO
-    this.formulario = new FormGroup({
-      'nombre': new FormControl('', [Validators.required]),//VALIDACIONES
-      'precio': new FormControl('', [Validators.required])
+  constructor(public productService: ProductsService) {
+    this.nombre = new FormControl('');
+    this.precio = new FormControl('');
+
+    this.NuevoProducto = new FormGroup({
+      nombre: this.nombre,
+      precio: this.precio
     });
   }
 
-  guardar() {
-    if (this.formulario.valid) {
-      this.mensajeExito = 'Formulario válido';
-    } else {
-      this.mensajeError = 'Formulario malo'
-    }
+  //METODO PARA ENVIAR LOS DATOS
+  postProduct(){
+    this.productService.postProduct(this.NuevoProducto.value).subscribe({
+      next: (data) => {
+        console.log(data);
+      },
+      error: (error) => {
+        console.log(error);
+      }
+    })
   }
-
+ 
 }

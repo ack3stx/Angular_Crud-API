@@ -1,32 +1,15 @@
-<!-- <div class="container">  
-<form [formGroup]="formulario" (ngSubmit)="guardar()">  [formGroup] vincula el typescript con el html -->
-    <!-- INPUT DEL NOMBRE DEL PRODUCTO -->
-    <!-- <div class="mb-3">
-    <label for="nombre">Nombre:</label>
-    <input id="nombre" formControlName="nombre">
-    </div> -->
-    <!-- INPUT DEL PRECIO DEL PRODUCTO -->
-    <!-- <div class="mb-3">
-    <label for="precio">Precio:</label>
-    <input id="precio" formControlName="precio">
-    </div> -->
-    <!-- INPUT DEL BOTON DE GUARDAR -->
-    <!-- <div class="d-grid">
-        <button type="submit">Guardar</button>
-    </div>
-</form>
-</div> -->
+<!---FORMULARIO DE CREAR UN PRODUCTO-->
 <div class="container">
     <div class="form-wrapper">
       <h2 class="form-title">Nuevo Producto</h2>
-      <form [formGroup]="formulario" (ngSubmit)="guardar()">
+      <form [formGroup]="NuevoProducto" >
         <!-- Nombre del producto -->
         <div class="form-group">
           <label for="nombre">Nombre del producto</label>
           <input  type="text" id="nombre" formControlName="nombre" class="form-control" placeholder="Ingrese el nombre">
-          <div class="error-message" *ngIf="formulario.get('nombre')?.invalid && formulario.get('nombre')?.touched">
+          <!-- <div class="error-message" *ngIf="formulario.get('nombre')?.invalid && formulario.get('nombre')?.touched">
             El nombre es requerido
-          </div>
+          </div> -->
         </div>
         <!-- Precio del producto -->
         <div class="form-group">
@@ -35,12 +18,12 @@
             <span class="currency">$</span>
             <input type="number" id="precio" formControlName="precio"class="form-control" placeholder="0.00">
           </div>
-          <div class="error-message" *ngIf="formulario.get('precio')?.invalid && formulario.get('precio')?.touched">
+          <!-- <div class="error-message" *ngIf="formulario.get('precio')?.invalid && formulario.get('precio')?.touched">
             El precio es requerido
-          </div>
+          </div> -->
         </div>
         <!-- Boton de guardar -->
-        <button type="submit" [disabled]="!formulario.valid" class="submit-btn">
+        <button (click)="postProduct()" type="button" class="submit-btn">
           Guardar Producto
         </button>
         
