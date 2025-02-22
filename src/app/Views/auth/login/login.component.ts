@@ -1,32 +1,36 @@
 import { Component, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
+import { AuthService } from '../../../core/services/auth/auth.service';
 
 @Component({
   selector: 'app-login',
-  imports: [CommonModule, RouterModule, FormsModule],
+  standalone: true,
+  imports: [FormsModule],
   templateUrl: './login.component.html',
-  styleUrl: './login.component.css'
+  styleUrls: ['./login.component.css']
 })
 export class LoginComponent {
 
   router = inject(Router);
-  http = inject(HttpClient);
-
+  authService = inject(AuthService);
 
   apiLogin: any = {
     email: '',
     password: ''
-  }
+  };
 
   onlogin() {
-    this.http.post('http://127.0.0.1:8000/api/v1/login', this.apiLogin).subscribe((data) => {
-      alert('Login Successful');
-  }, (error) => {
-    alert('Invalid Credentials');
-  });
-}
+    this.authService.login(this.apiLogin).subscribe(
+      (response: any) => {
+        localStorage.setItem('token', response.token);
+
+        alert('Login Successful');
+        this.router.navigate(['/dashboard']);
+      },
+      (error) => {
+        alert('Invalid Credentials');
+      }
+    );
+  }
 }
