@@ -2,6 +2,8 @@ import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../core/services/auth/auth.service';
+import { LoginCredentials } from '../../../core/models/login-credentials';
+
 
 @Component({
   selector: 'app-login',
@@ -15,7 +17,7 @@ export class LoginComponent {
   router = inject(Router);
   authService = inject(AuthService);
 
-  apiLogin: any = {
+  apiLogin: LoginCredentials = {
     email: '',
     password: ''
   };
