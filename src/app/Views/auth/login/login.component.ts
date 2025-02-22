@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../../core/services/auth/auth.service';
 import { LoginCredentials } from '../../../core/models/login-credentials';
 
@@ -8,7 +8,7 @@ import { LoginCredentials } from '../../../core/models/login-credentials';
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule,RouterModule],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })

@@ -1,25 +1,20 @@
 <div class="register-container">
     <div class="register-wrapper">
-      <form>
+      <form (ngSubmit)="onRegister()">
         <h1>Register</h1>
   
         <div class="input-box">
-          <input type="text" placeholder="Username" required>
+          <input type="text" [(ngModel)]="registerdata.name"   placeholder="Username" name = "name"required>
           <i class='bx bxs-user'></i>
         </div>
   
         <div class="input-box">
-          <input type="email" placeholder="Email" required>
+          <input type="email" [(ngModel)]="registerdata.email" placeholder="Email" name = "email" required>
           <i class='bx bxs-envelope'></i>
         </div>
   
         <div class="input-box">
-          <input type="password" placeholder="Password" required>
-          <i class='bx bxs-lock-alt'></i>
-        </div>
-  
-        <div class="input-box">
-          <input type="password" placeholder="Confirm Password" required>
+          <input type="password" [(ngModel)]="registerdata.password" placeholder="Password" name = "password" required>
           <i class='bx bxs-lock-alt'></i>
         </div>
   
