@@ -1,1 +1,14 @@
-<p>show works!</p>
+<table>
+    <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Precio</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let producto of ServicioP.products">
+        <td>{{ producto.nombre }}</td>
+        <td>{{ producto.precio }}</td>
+        </tr>
+    </tbody>
+</table>
