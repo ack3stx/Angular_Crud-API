@@ -23,16 +23,15 @@ export class LoginComponent {
   };
 
   onlogin() {
-    this.authService.login(this.apiLogin).subscribe(
-      (response: any) => {
+    this.authService.login(this.apiLogin).subscribe({
+      next: (response) => {
         localStorage.setItem('token', response.token);
-
         alert('Login Successful');
         this.router.navigate(['/dashboard']);
       },
-      (error) => {
+      error: (error) => {
         alert('Invalid Credentials');
       }
-    );
+    });
   }
 }
