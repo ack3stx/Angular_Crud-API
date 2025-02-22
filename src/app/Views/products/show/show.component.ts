@@ -1,25 +1,26 @@
 import { Component, OnInit } from '@angular/core';
 import { ProductsService } from '../../../core/services/products/products.service';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-show',
-  imports: [],
+  imports: [CommonModule],
   templateUrl: './show.component.html',
   styleUrl: './show.component.css'
 })
 export class ShowComponent implements OnInit {
-
+  productos: any[] = [];
   //CREAMOS UN CONSTRUCTOR PARA INYECTAR EL SERVICIO
-  constructor(public servicioP:ProductsService) {}
+  constructor(public productService:ProductsService) {}
 
   ngOnInit(): void {
-    this.getUsers();
+    this.cargarProductos();
   }
 
-  getUsers(){
-    this.servicioP.getProducts().subscribe({
+  cargarProductos(){
+    this.productService.getProducts().subscribe({
       next: (data) => {
-        this.servicioP.products = data
+        this.productos = data
       },
       error: (e) => {
         console.log(e);
