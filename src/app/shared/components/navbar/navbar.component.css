@@ -1,0 +1,13 @@
+.navbar {
+    padding: 1rem;
+  }
+  
+  .navbar-nav .nav-link {
+    color: white !important;
+  }
+  
+  .navbar-nav .nav-link.active {
+    font-weight: bold;
+    text-decoration: underline;
+  }
+  
