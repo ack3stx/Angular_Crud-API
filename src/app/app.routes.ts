@@ -5,21 +5,31 @@ import { WelcomeComponent } from './Views/welcome/welcome.component';
 import { DashboardComponent } from './Views/dashboard/dashboard/dashboard.component';
 import { InsertComponent } from './Views/products/insert/insert.component';
 import { ShowComponent } from './Views/products/show/show.component';
+import { authTokenGuard } from './core/guards/auth-token.guard';
+import { loginGuard } from './core/guards/login.guard';
 
 
 
 export const routes: Routes = [
     {
         path: 'login',
-        component: LoginComponent
+        component: LoginComponent,
+        canActivate: [loginGuard]
     },
     {
         path: 'register',
-        component: RegisterComponent
+        component: RegisterComponent,
+        canActivate: [loginGuard]
+    },
+    {
+        path : 'welcome',
+        component : WelcomeComponent,
+        canActivate : [loginGuard]
     },
     {
         path: '',
-        component: WelcomeComponent
+        component: WelcomeComponent,
+        canActivate : [loginGuard]
     },
     {
         path: 'insert',
@@ -31,8 +41,7 @@ export const routes: Routes = [
     },
     {
         path: 'dashboard',
-        component: DashboardComponent
-
-        
+        component: DashboardComponent,
+        canActivate: [authTokenGuard]  // Protected route 
     }
 ]
