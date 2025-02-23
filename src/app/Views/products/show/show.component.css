@@ -25,19 +25,19 @@
 }
 
 .custom-table th {
-    background-color:black;
+    background-color:#212529;
     color: white;
     padding: 15px 15px; /* Más padding horizontal */
     text-align: left;
     font-weight: 500;
-    border-right: 5px solid black;
-    border-left: 5px solid black;
+    border-right: 5px solid #212529;
+    border-left: 5px solid #212529;
 }
 
 .custom-table td {
     /* Más padding horizontal */
-    border-bottom: 1px solid black;
-    border-right: 1px solid black;
+    border-bottom: 1px solid #212529;
+    border-right: 1px solid #212529;
 }
 
 
@@ -54,7 +54,7 @@
 
 .pagination-btn {
     padding: 8px 16px;
-    background-color: black;
+    background-color: #212529;
     color: white;
     border: none;
     border-radius: 4px;
@@ -63,7 +63,7 @@
 }
 
 .pagination-btn:hover:not(:disabled) {
-    background-color: black;
+    background-color: #212529;
     transform: translateY(-2px);
 }
 

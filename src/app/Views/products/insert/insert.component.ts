@@ -13,18 +13,15 @@ import { ToastrService } from 'ngx-toastr';
 })
 export class InsertComponent {
   NuevoProducto: FormGroup;
-  nombre: FormControl;
-  precio: FormControl
+
  
 
   constructor(public productService: ProductsService, private tostada: ToastrService) {
-    this.nombre = new FormControl('');
-    this.precio = new FormControl('');
-
     this.NuevoProducto = new FormGroup({
-      nombre: this.nombre,
-      precio: this.precio
+    nombre: new FormControl(''),
+    precio: new FormControl('')
     });
+    
   }
 
   //METODO PARA ENVIAR LOS DATOS

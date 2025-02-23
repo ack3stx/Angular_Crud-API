@@ -12,7 +12,7 @@
             <tr *ngFor="let producto of productos">
             <td>{{ producto.nombre }}</td>
             <td>{{ producto.precio }}</td>
-            <td><button (click)="deleteProduct(producto.id)" class="delete-btn">Eliminar</button></td>
+            <td><button (click)="deleteProduct(producto.id,producto.nombre)" class="delete-btn">Eliminar</button></td>
             </tr>
         </tbody>
     </table>

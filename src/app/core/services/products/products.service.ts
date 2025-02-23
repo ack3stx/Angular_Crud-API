@@ -36,4 +36,10 @@ export class ProductsService {
     return this.http.delete<Producto>(`${this.url}/${id}`);
   }
 
+  //METODO PARA ACTUALIZAR UN PRODUCTO
+  putProduct(id:number,producto: Producto): Observable<Producto> {
+    //RETORNAMOS LOS QUE NOS REGRESO LA PETICION PUT
+    return this.http.put<Producto>(`${this.url}/${producto.id}`, producto);
+  }
+
 }

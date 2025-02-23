@@ -8,6 +8,7 @@ import { ShowComponent } from './Views/products/show/show.component';
 import { authTokenGuard } from './core/guards/auth-token.guard';
 import { loginGuard } from './core/guards/login.guard';
 import { DeleteComponent } from './Views/products/delete/delete.component';
+import { UpdateComponent } from './Views/products/update/update.component';
 
 
 
@@ -43,6 +44,10 @@ export const routes: Routes = [
     {
         path: 'delete',
         component: DeleteComponent
+    },
+    {
+        path: 'update',
+        component: UpdateComponent
     },
     {
         path: 'dashboard',
