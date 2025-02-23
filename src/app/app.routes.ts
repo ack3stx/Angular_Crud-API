@@ -35,19 +35,24 @@ export const routes: Routes = [
     },
     {
         path: 'insert',
-        component: InsertComponent
+        component: InsertComponent,
+        canActivate: [authTokenGuard]
+
     },
     {
         path: 'show',
-        component: ShowComponent
+        component: ShowComponent,
+        canActivate: [authTokenGuard]
     },
     {
         path: 'delete',
-        component: DeleteComponent
+        component: DeleteComponent,
+        canActivate: [authTokenGuard]
     },
     {
         path: 'update',
-        component: UpdateComponent
+        component: UpdateComponent,
+        canActivate: [authTokenGuard]
     },
     {
         path: 'dashboard',

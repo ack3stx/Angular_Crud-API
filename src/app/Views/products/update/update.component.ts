@@ -67,10 +67,12 @@ export class UpdateComponent implements OnInit
         precio: this.formularioUpdate.get('precio')?.value
       };
       this.productService.putProduct(productoActualizado.id, productoActualizado).subscribe({
-        next: (response) => {
+        next: (data) => {
           this.tostada.success(`Producto "${productoActualizado.nombre}" actualizado correctamente`, 'Éxito');
+          console.log(data);
           this.cerrarModal();
           this.cargarProductos();
+
         },
         error: (error) => {
           console.log(error);
