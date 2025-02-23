@@ -6,14 +6,22 @@ import { FormsModule } from '@angular/forms';
 import { RegisterService } from '../../../core/services/auth/register.service';
 
 @Component({
-  selector: 'app-register',
-  standalone: true,
-  imports: [FormsModule, CommonModule, RouterModule],
-  templateUrl: './register.component.html',
-  styleUrls: ['./register.component.css']
+  selector: 'app-register',    // Cómo se usará en el HTML
+  standalone: true,            // Indica que es un componente independiente
+  imports: [                   // Módulos necesarios para el template
+    FormsModule,              // Para formularios
+    CommonModule,             // Para directivas como *ngIf, *ngFor
+    RouterModule              // Para navegación
+  ],
+  templateUrl: './register.component.html',    // Vista HTML
+  styleUrls: ['./register.component.css']      // Estilos CSS
 })
 export class RegisterComponent {
+
+
+  // inject() obtiene una instancia del servicio Router
   router = inject(Router);
+  // inject() obtiene una instancia del RegisterService
   registerService = inject(RegisterService);
 
   registerdata: RegisterCredentials = {
@@ -21,6 +29,13 @@ export class RegisterComponent {
     password: '',
     email: '',
   };
+
+  //El subscribe es como un "escuchador" que espera a que algo suceda.
+  // la respuesta del servidor después de intentar registrar un usuario.
+  //Si la respuesta es exitosa, se muestra un mensaje de alerta
+  // y se redirige al usuario a la página de inicio de sesión. 
+  //Respuestas exitosas (códigos 2XX) activan el next:
+  //Respuestas de error (códigos 4XX o 5XX) activan el error:
 
   onRegister() {
     console.log('Datos a enviar:', this.registerdata);  
