@@ -47,6 +47,35 @@ export class DeleteComponent implements OnInit
     })
   }
 
+  // VARIABLES PARA LA PAGINACION
+  pagina : number = 1;
+  registros : number = 3;
+
+  //METODO PARA SABER LA PAGINA ACTUAL
+  get paginaActual(){
+    const indice = (this.pagina - 1) * this.registros;
+    return this.productos.slice(indice, indice + this.registros);
+  }
+
+  // METODO PARA EL TOTAL DE PAGINAS
+  get totalPaginas(){
+    return Math.ceil(this.productos.length / this.registros);
+  }
+
+  //METODO PARA IR A LA SIGUIENTE PAGINA
+  siguiente(){
+    if(this.pagina < this.totalPaginas){
+      this.pagina++;
+    }
+  }
+
+  //METODO PARA IR A LA PAGINA ANTERIOR
+  anterior(){
+    if(this.pagina > 1){
+      this.pagina--;
+    }
+  }
+
 
 
 }

@@ -17,10 +17,10 @@
               Productos
             </a>
             <ul class="dropdown-menu">
-              <li><a class="dropdown-item" routerLink="/show" routerLinkActive="active">Lista de Productos</a></li>
-              <li><a class="dropdown-item" routerLink="/insert" routerLinkActive="active">Crear Producto</a></li>
-              <li><a class="dropdown-item" routerLink="/update" routerLinkActive="active">Editar Producto</a></li>
-              <li><a class="dropdown-item" routerLink="/delete" routerLinkActive="active">Eliminar Producto</a></li>
+              <li><a class="dropdown-item" routerLink="/show" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Lista de Productos</a></li>
+              <li><a class="dropdown-item" routerLink="/insert" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Crear Producto</a></li>
+              <li><a class="dropdown-item" routerLink="/update" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Editar Producto</a></li>
+              <li><a class="dropdown-item" routerLink="/delete" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Eliminar Producto</a></li>
             </ul>
           </li>
         </ul>
