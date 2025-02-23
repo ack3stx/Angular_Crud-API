@@ -1,29 +1,29 @@
 <div class="login-container">
-    <div class="login-wrapper">
-      <form (ngSubmit)="onlogin()">
-        <h1>Login</h1>
-  
-        <div class="input-box">
-          <input type="text" [(ngModel)]="apiLogin.email" name="email" placeholder="Email" required>
-          <i class='bx bxs-user'></i>
-        </div>
-  
-        <div class="input-box">
-          <input type="password" [(ngModel)]="apiLogin.password" name="password" placeholder="Password" required>
-          <i class='bx bxs-lock-alt'></i>
-        </div>
-  
-        <div class="remember-forget">
-          <label><input type="checkbox">Remember me</label>
-          <a href="#">Forgot password?</a>
-        </div>
-  
-        <button type="submit" class="btn">Login</button>
-  
-        <div class="register-link">
-          <p>Don't have an account? <br>
-            <a routerLink="/register" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Register</a></p>
-        </div>
-      </form>
-    </div>
+  <div class="login-wrapper">
+    <form [formGroup]="FormularioLogin">
+      <h1>Login</h1>
+
+      <div class="input-box">
+        <input type="email" formControlName="email" placeholder="Email">
+        <i class='bx bxs-user'></i>
+      </div>
+
+      <div class="input-box">
+        <input type="password" formControlName="password" placeholder="Password">
+        <i class='bx bxs-lock-alt'></i>
+      </div>
+
+      <div class="remember-forget">
+        <label><input type="checkbox">Remember me</label>
+        <a href="#">Forgot password?</a>
+      </div>
+
+      <button type="button" class="btn" (click)="onlogin()">Login</button>
+
+      <div class="register-link">
+        <p>Don't have an account? <br>
+          <a routerLink="/register" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Register</a></p>
+      </div>
+    </form>
   </div>
+</div>
