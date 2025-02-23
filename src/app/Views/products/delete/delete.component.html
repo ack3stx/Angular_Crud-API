@@ -9,11 +9,18 @@
             </tr>
         </thead>
         <tbody>
-            <tr *ngFor="let producto of productos">
+            <tr *ngFor="let producto of paginaActual">
             <td>{{ producto.nombre }}</td>
             <td>{{ producto.precio }}</td>
             <td><button (click)="deleteProduct(producto.id,producto.nombre)" class="delete-btn">Eliminar</button></td>
             </tr>
         </tbody>
     </table>
+
+    <!--PAGINACION-->
+    <div class="pagination-controls">
+        <button (click)="anterior()" class="pagination-btn" [disabled]="pagina === 1">Anterior</button>
+        <span class="page-info">Pagina {{pagina}} de {{totalPaginas}}</span>
+        <button (click)="siguiente()" class="pagination-btn" [disabled]="pagina === totalPaginas">Siguiente</button>
+    </div>
 </div>
