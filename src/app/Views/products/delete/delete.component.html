@@ -1,1 +1,19 @@
-<p>delete works!</p>
+<div class="table-container">
+    <h2 class="table-title">Lista de Productos</h2>
+    <table class="custom-table">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Precio</th>
+                <th>Eliminar</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let producto of productos">
+            <td>{{ producto.nombre }}</td>
+            <td>{{ producto.precio }}</td>
+            <td><button (click)="deleteProduct(producto.id)" class="delete-btn">Eliminar</button></td>
+            </tr>
+        </tbody>
+    </table>
+</div>

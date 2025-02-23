@@ -11,7 +11,7 @@ export class ProductsService {
   //URL DE LA API
   private url = 'http://127.0.0.1:8000/api/v1/productos';
 
-  
+
   //INYECTAMOS EL SERVICIO HTTPCLIENT
   constructor(private http:HttpClient) {
    }
@@ -28,6 +28,12 @@ export class ProductsService {
   {
     //RETORNAMOS LOS QUE NOS REGRESO LA PETICION POST
     return this.http.post<Producto>(this.url,producto);
+  }
+
+  //METODO PARA ELIMINAR UN PRODUCTO
+  deleteProduct(id: number): Observable<Producto> {
+    //RETORNAMOS LOS QUE NOS REGRESO LA PETICION DELETE
+    return this.http.delete<Producto>(`${this.url}/${id}`);
   }
 
 }

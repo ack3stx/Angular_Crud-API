@@ -7,6 +7,7 @@ import { InsertComponent } from './Views/products/insert/insert.component';
 import { ShowComponent } from './Views/products/show/show.component';
 import { authTokenGuard } from './core/guards/auth-token.guard';
 import { loginGuard } from './core/guards/login.guard';
+import { DeleteComponent } from './Views/products/delete/delete.component';
 
 
 
@@ -38,6 +39,10 @@ export const routes: Routes = [
     {
         path: 'show',
         component: ShowComponent
+    },
+    {
+        path: 'delete',
+        component: DeleteComponent
     },
     {
         path: 'dashboard',

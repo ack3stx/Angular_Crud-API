@@ -7,9 +7,6 @@
         <div class="form-group">
           <label for="nombre">Nombre del producto</label>
           <input  type="text" id="nombre" formControlName="nombre" class="form-control" placeholder="Ingrese el nombre">
-          <!-- <div class="error-message" *ngIf="formulario.get('nombre')?.invalid && formulario.get('nombre')?.touched">
-            El nombre es requerido
-          </div> -->
         </div>
         <!-- Precio del producto -->
         <div class="form-group">
@@ -18,9 +15,6 @@
             <span class="currency">$</span>
             <input type="number" id="precio" formControlName="precio"class="form-control" placeholder="0.00">
           </div>
-          <!-- <div class="error-message" *ngIf="formulario.get('precio')?.invalid && formulario.get('precio')?.touched">
-            El precio es requerido
-          </div> -->
         </div>
         <!-- Boton de guardar -->
         <button (click)="postProduct()" type="button" class="submit-btn">

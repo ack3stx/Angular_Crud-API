@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormGroup, FormControl, Validators, ReactiveFormsModule } from '@angular/forms';
 import { ProductsService } from '../../../core/services/products/products.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-insert',
@@ -16,7 +17,7 @@ export class InsertComponent {
   precio: FormControl
  
 
-  constructor(public productService: ProductsService) {
+  constructor(public productService: ProductsService, private tostada: ToastrService) {
     this.nombre = new FormControl('');
     this.precio = new FormControl('');
 
@@ -31,9 +32,12 @@ export class InsertComponent {
     this.productService.postProduct(this.NuevoProducto.value).subscribe({
       next: (data) => {
         console.log(data);
+        this.tostada.success('Producto agregado correctamente', 'Producto agregado');
+        this.NuevoProducto.reset();
       },
       error: (error) => {
         console.log(error);
+        this.tostada.error('Error al crear el producto', 'Error');
       }
     })
   }
