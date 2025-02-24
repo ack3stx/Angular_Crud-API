@@ -16,7 +16,7 @@ export class NavbarComponent {
 
   // Método para verificar si está logueado
   isLoggedIn(): boolean {
-    return this.authService.isLoggedIn();
+    return !!localStorage.getItem('token');
   }
 
   // Método para cerrar sesión

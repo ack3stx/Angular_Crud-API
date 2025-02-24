@@ -12,10 +12,8 @@ export const authTokenGuard: CanActivateFn = (route, state) => {
   }
 
   try {
-    // Decodifica el token para verificar su estructura
     const decodedToken = jwtDecode(token);
     
-    // Verifica si el token ha expirado
     if (decodedToken.exp && decodedToken.exp * 1000 < Date.now()) {
       localStorage.removeItem('token');
       router.navigate(['/login']);
@@ -24,7 +22,6 @@ export const authTokenGuard: CanActivateFn = (route, state) => {
 
     return true;
   } catch (error) {
-    // Si hay error al decodificar el token, significa que no es válido
     localStorage.removeItem('token');
     router.navigate(['/login']);
     return false;
