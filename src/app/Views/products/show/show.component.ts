@@ -5,26 +5,32 @@ import { Producto } from '../../../core/models/producto.model';
 
 @Component({
   selector: 'app-show',
-  imports: [CommonModule],
+  imports: [CommonModule], // IMPORTAMOS EL MODULO DE COMMON PARA USAR EL NGFOR
   templateUrl: './show.component.html',
   styleUrl: './show.component.css'
 })
-
-export class ShowComponent implements OnInit //IMPLEMENTAMOS EL METODO ONINIT PARA
+//IMPLEMENTAMOS EL METODO ONINIT PARA QUE EJECUTE EL METODO CUANDO ANGUALR CARGUE EL COMPONENTE
+export class ShowComponent implements OnInit  
  {
+  //DECLARAMOS UNA VARIABLE DE TIPO PRODUCTO
+  //DONDE SE ALAMCENARAN TODOS LOS PRODUCTOS DE LA BASE DE DATOS
+  //ESTA VARIABLE LA INICIALIZO COMO UN ARRAY VACIO
   productos: Producto[] = [];
   
   //CREAMOS UN CONSTRUCTOR PARA INYECTAR EL SERVICIO
   constructor(public productService:ProductsService) {}
 
+  //METODO LLAMA AL SERVICIO PARA CARGAR LOS PRODUCTOS
   ngOnInit(): void {
     this.cargarProductos();
   }
 
  // METODO PARA CARGAR LOS PRODUCTOS
   cargarProductos(){
-    this.productService.getProducts().subscribe({
+    // LLAMAMOS AL METODO GETPRODUCTS DEL SERVICIO
+    this.productService.getProducts().subscribe({ // SUBSCRIBIMOS EL METODO
       next: (data) => {
+        // SI TODO SALE BIEN ALMACENAMOS LOS PRODUCTOS DE LA RESPUESTA EN LA VARIABBLE DECLARADA
         this.productos = data
       },
       error: (e) => {

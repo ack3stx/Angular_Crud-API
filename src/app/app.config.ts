@@ -10,11 +10,13 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }), 
     provideRouter(routes),
+    // AÑADIMOS EL INTERCEPTOR DE AUTORIZACION
+    // TODAS LAS PETICIONES PASARAN POR ESTE INTERCEPTOR
     provideHttpClient(
       withInterceptors([authTokenInterceptor])
     ),
     provideToastr({
-      timeOut: 3000,
+      timeOut: 3000,                 // Duración del mensaje
       positionClass: 'toast-bottom-right', // Cambiado a arriba a la derecha
       preventDuplicates: true,
       progressBar: true,              // Añade barra de progreso

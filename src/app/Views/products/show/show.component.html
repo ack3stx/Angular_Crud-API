@@ -8,6 +8,7 @@
             </tr>
         </thead>
         <tbody>
+            <!--TENGO UN CICLO FOR DONDE CON LA INTERPOLACION MUESTRO LOS DATOS-->
             <tr *ngFor="let producto of paginaActual">
             <td>{{ producto.nombre }}</td>
             <td>{{ producto.precio }}</td>
@@ -17,8 +18,10 @@
 
     <!--PAGINACION-->
     <div class="pagination-controls">
+        <!---BOTONES PARA CAMBIAR DE PAGINA-->
         <button (click)="anterior()" class="pagination-btn" [disabled]="pagina === 1">Anterior</button>
         <span class="page-info">Pagina {{pagina}} de {{totalPaginas}}</span>
+        <!---BOTON PARA CAMBIAR DE PAGINA-->
         <button (click)="siguiente()" class="pagination-btn" [disabled]="pagina === totalPaginas">Siguiente</button>
     </div>
 </div>

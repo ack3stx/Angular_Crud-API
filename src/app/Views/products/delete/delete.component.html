@@ -12,6 +12,7 @@
             <tr *ngFor="let producto of paginaActual">
             <td>{{ producto.nombre }}</td>
             <td>{{ producto.precio }}</td>
+            <!--BOTON LLAMA A MI METODO DEL TS DONDE LE PASO 2 PARAMETROS EL ID Y EL NOMBRE-->
             <td><button (click)="deleteProduct(producto.id,producto.nombre)" class="delete-btn">Eliminar</button></td>
             </tr>
         </tbody>

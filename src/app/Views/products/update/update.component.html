@@ -13,11 +13,7 @@
             <tr *ngFor="let producto of paginaActual">
                 <td>{{ producto.nombre }}</td>
                 <td>${{ producto.precio }}</td>
-                <td>
-                    <button class="update-btn" (click)="abrirModal(producto)">
-                        Actualizar
-                    </button>
-                </td>
+                <td><button class="update-btn" (click)="abrirModal(producto)">Actualizar</button></td>
             </tr>
         </tbody>
     </table>
@@ -31,28 +27,27 @@
 </div>
 
 <!-- Modal -->
-<div class="modal" *ngIf="modalVisible">
+<div class="modal" *ngIf="modalVisible"> <!--UN IF PARA QUE SE MUESTRE SI LA PROPIEDAD modalVisible ES TRUE-->
     <div class="modal-content">
         <h2>Actualizar Producto</h2>
+        <!---VINCULAMOS EL FORMULARIO CON EL FORMGROUP DEL ARCHIVO.TS-->
         <form [formGroup]="formularioUpdate" >
+            <!---DIV PARA EL INPUT DE NOMBRE-->
             <div class="form-group">
                 <label for="nombre">Nombre del producto</label>
-                <input type="text" 
-                       id="nombre" 
-                       formControlName="nombre" 
-                       class="form-control">
+                <input type="text" id="nombre" formControlName="nombre" class="form-control">
             </div>
 
+            <!---DIV PARA EL INPUT DE PRECIO-->
             <div class="form-group">
                 <label for="precio">Precio</label>
-                <input type="number" 
-                       id="precio" 
-                       formControlName="precio" 
-                       class="form-control">
+                <input type="number" id="precio" formControlName="precio" class="form-control">
             </div>
-
+            <!--BOTONES--->
             <div class="modal-buttons">
+                <!--BOTON QUE LLAMA A LA FUNCION ACTUALIZARPRODUCTO-->
                 <button (click)="actualizarProducto()" type="submit" class="btn-save">Guardar</button>
+                <!--SI CANCELO EN EL MODAL CIERRO EL MODAL-->
                 <button type="button" class="btn-cancel" (click)="cerrarModal()">Cancelar</button>
             </div>
         </form>
