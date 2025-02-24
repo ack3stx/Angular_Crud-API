@@ -57,6 +57,6 @@ export const routes: Routes = [
     {
         path: 'dashboard',
         component: DashboardComponent,
-        canActivate: [authTokenGuard]  // Protected route 
+        canActivate: [authTokenGuard]
     }
 ]
