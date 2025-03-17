@@ -1,0 +1,47 @@
+<div class="container mt-4">
+    <h2>Lista de Empleados</h2>
+  
+    <!-- Error message -->
+    <div *ngIf="error" class="alert alert-danger alert-dismissible fade show" role="alert">
+      {{ error }}
+      <button type="button" class="btn-close" (click)="error = ''"></button>
+    </div>
+  
+    <!-- Loading spinner -->
+    <div *ngIf="loading" class="text-center p-3">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Cargando...</span>
+      </div>
+    </div>
+  
+    <!-- Employees table -->
+    <div class="card" *ngIf="!loading">
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>Apellido</th>
+                <th>Correo</th>
+                <th>Teléfono</th>
+                <th>Dirección</th>
+                <th>Estado</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let empleado of empleados">
+                <td>{{ empleado.nombre }}</td>
+                <td>{{ empleado.apellido }}</td>
+                <td>{{ empleado.telefono }}</td>
+                <td>{{ empleado.direccion }}</td>
+              </tr>
+            </tbody>
+          </table>
+          <div *ngIf="empleados.length === 0" class="text-center py-3">
+            No hay empleados registrados
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>

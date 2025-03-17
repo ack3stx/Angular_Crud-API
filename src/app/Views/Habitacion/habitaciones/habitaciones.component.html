@@ -1,0 +1,90 @@
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Habitaciones</h2>
+    <!-- Mostrar el botón solo si es administrador -->
+    <button *ngIf="isAdmin()" class="btn btn-primary" routerLink="/habitaciones/crear">
+      <i class="bi bi-plus-circle"></i> Nueva Habitación
+    </button>
+  </div>
+
+  <!-- Error message -->
+  <div *ngIf="error" class="alert alert-danger alert-dismissible fade show" role="alert">
+    {{ error }}
+    <button type="button" class="btn-close" (click)="error = ''"></button>
+  </div>
+
+  <!-- Loading spinner -->
+  <div *ngIf="loading" class="d-flex justify-content-center my-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Cargando...</span>
+    </div>
+  </div>
+
+  <!-- Tabla de habitaciones -->
+  <div class="card" *ngIf="!loading">
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>Número</th>
+              <th>Tipo</th>
+              <th>Precio</th>
+              <th>Descripción</th>
+              <th *ngIf="isAdmin()">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Usamos paginaActual en lugar de habitaciones -->
+            <tr *ngFor="let habitacion of paginaActual">
+              <td>{{ habitacion.numero_habitacion }}</td>
+              <td>{{ habitacion.tipo_habitacion }}</td>
+              <td>${{ habitacion.precio_habitacion }}</td>
+              <td>{{ habitacion.descripcion_habitacion }}</td>
+              <td *ngIf="isAdmin()">
+                <div class="btn-group">
+                  <button class="btn btn-sm btn-warning me-1" [routerLink]="['/habitaciones/editar', habitacion.id]">
+                    <i class="bi bi-pencil"></i> Editar
+                  </button>
+                  <button class="btn btn-sm btn-danger" (click)="deleteHabitacion(habitacion.id)">
+                    <i class="bi bi-trash"></i> Eliminar
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- Paginación simple -->
+        <div class="d-flex justify-content-between align-items-center p-2" *ngIf="habitaciones.length > 0">
+          <div>
+            <select class="form-select form-select-sm" style="width: auto" (change)="cambiarRegistros($event)">
+              <option value="5" [selected]="registros === 5">5 por página</option>
+              <option value="10" [selected]="registros === 10">10 por página</option>
+              <option value="15" [selected]="registros === 15">15 por página</option>
+            </select>
+          </div>
+          
+          <div>
+            <span>
+              Página {{ pagina }} de {{ totalPaginas }} ({{ habitaciones.length }} registros)
+            </span>
+          </div>
+
+          <div>
+            <button class="btn btn-sm btn-outline-primary me-2" [disabled]="pagina === 1" (click)="anterior()">
+              <i class="bi bi-chevron-left"></i> Anterior
+            </button>
+            <button class="btn btn-sm btn-outline-primary" [disabled]="pagina === totalPaginas" (click)="siguiente()">
+              Siguiente <i class="bi bi-chevron-right"></i>
+            </button>
+          </div>
+        </div>
+        
+        <div *ngIf="habitaciones.length === 0" class="text-center py-3">
+          No hay habitaciones disponibles.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

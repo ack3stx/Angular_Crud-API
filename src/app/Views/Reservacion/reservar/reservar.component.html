@@ -1,0 +1,169 @@
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Nueva Reservación</h2>
+    <button class="btn btn-outline-secondary" (click)="cancelar()">
+      <i class="bi bi-arrow-left"></i> Volver
+    </button>
+  </div>
+
+  <!-- Mensaje de error -->
+  <div *ngIf="error" class="alert alert-danger alert-dismissible fade show" role="alert">
+    {{ error }}
+    <button type="button" class="btn-close" (click)="error = null"></button>
+  </div>
+
+  <!-- Spinner de carga -->
+  <div *ngIf="loadingData" class="d-flex justify-content-center my-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Cargando...</span>
+    </div>
+  </div>
+
+  <!-- Formulario de reservación -->
+  <div class="card" *ngIf="!loadingData">
+    <div class="card-body">
+      <form [formGroup]="reservacionForm" (ngSubmit)="onSubmit()">
+        <div class="row mb-3">
+          <!-- Datos de fechas -->
+          <div class="col-md-6">
+            <div class="mb-3">
+              <label for="fecha_entrada" class="form-label">Fecha de entrada</label>
+              <input type="date" id="fecha_entrada" class="form-control" formControlName="fecha_entrada"
+                [ngClass]="{'is-invalid': reservacionForm.get('fecha_entrada')?.invalid && reservacionForm.get('fecha_entrada')?.touched}">
+              <div *ngIf="reservacionForm.get('fecha_entrada')?.invalid && reservacionForm.get('fecha_entrada')?.touched" class="invalid-feedback">
+                La fecha de entrada es requerida
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="mb-3">
+              <label for="fecha_salida" class="form-label">Fecha de salida</label>
+              <input type="date" id="fecha_salida" class="form-control" formControlName="fecha_salida"
+                [ngClass]="{'is-invalid': reservacionForm.get('fecha_salida')?.invalid && reservacionForm.get('fecha_salida')?.touched}">
+              <div *ngIf="reservacionForm.get('fecha_salida')?.invalid && reservacionForm.get('fecha_salida')?.touched" class="invalid-feedback">
+                La fecha de salida es requerida
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <!-- Datos de habitación y huésped -->
+          <div class="col-md-6">
+            <div class="mb-3">
+              <label for="habitacion_id" class="form-label">Habitación</label>
+              <select id="habitacion_id" class="form-select" formControlName="habitacion_id"
+                [ngClass]="{'is-invalid': reservacionForm.get('habitacion_id')?.invalid && reservacionForm.get('habitacion_id')?.touched}">
+                <option value="">Seleccione una habitación</option>
+                <option *ngFor="let habitacion of habitaciones" [value]="habitacion.id">
+                  {{ habitacion.numero_habitacion }} - {{ habitacion.tipo_habitacion }} ({{ habitacion.precio_habitacion | currency }})
+                </option>
+              </select>
+              <div *ngIf="reservacionForm.get('habitacion_id')?.invalid && reservacionForm.get('habitacion_id')?.touched" class="invalid-feedback">
+                Debe seleccionar una habitación
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="mb-3">
+              <label for="huesped_id" class="form-label">Huésped</label>
+              <select id="huesped_id" class="form-select" formControlName="huesped_id"
+                [ngClass]="{'is-invalid': reservacionForm.get('huesped_id')?.invalid && reservacionForm.get('huesped_id')?.touched}">
+                <option value="">Seleccione un huésped</option>
+                <option *ngFor="let huesped of huespedes" [value]="huesped.id">
+                  {{ huesped.nombre }} {{ huesped.apellido }} - {{ huesped.telefono }}
+                </option>
+              </select>
+              <div *ngIf="reservacionForm.get('huesped_id')?.invalid && reservacionForm.get('huesped_id')?.touched" class="invalid-feedback">
+                Debe seleccionar un huésped
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <!-- Datos de precio y estado -->
+          <div class="col-md-4">
+            <div class="mb-3">
+              <label for="precio_total" class="form-label">Precio total</label>
+              <div class="input-group">
+                <span class="input-group-text">$</span>
+                <input type="number" id="precio_total" class="form-control" formControlName="precio_total"
+                  [ngClass]="{'is-invalid': reservacionForm.get('precio_total')?.invalid && reservacionForm.get('precio_total')?.touched}" readonly>
+                <div *ngIf="reservacionForm.get('precio_total')?.invalid && reservacionForm.get('precio_total')?.touched" class="invalid-feedback">
+                  El precio total debe ser mayor a 0
+                </div>
+              </div>
+              <small class="form-text text-muted">Este precio se calcula automáticamente en base a los días y la habitación seleccionada.</small>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="mb-3">
+              <label for="estado_reservacion" class="form-label">Estado de la reservación</label>
+              <select id="estado_reservacion" class="form-select" formControlName="estado_reservacion"
+                [ngClass]="{'is-invalid': reservacionForm.get('estado_reservacion')?.invalid && reservacionForm.get('estado_reservacion')?.touched}">
+                <option value="Pendiente">Pendiente</option>
+                <option value="Confirmada">Confirmada</option>
+                <option value="Cancelada">Cancelada</option>
+              </select>
+              <div *ngIf="reservacionForm.get('estado_reservacion')?.invalid && reservacionForm.get('estado_reservacion')?.touched" class="invalid-feedback">
+                Debe seleccionar un estado
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="mb-3">
+              <label for="estado" class="form-label">Estado del registro</label>
+              <select id="estado" class="form-select" formControlName="estado">
+                <option value="Activo">Activo</option>
+                <option value="Inactivo">Inactivo</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <!-- Datos de pago -->
+          <div class="col-md-6">
+            <div class="mb-3">
+              <label for="metodo_pago" class="form-label">Método de pago</label>
+              <select id="metodo_pago" class="form-select" formControlName="metodo_pago"
+                [ngClass]="{'is-invalid': reservacionForm.get('metodo_pago')?.invalid && reservacionForm.get('metodo_pago')?.touched}">
+                <option value="">Seleccione un método de pago</option>
+                <option value="Efectivo">Efectivo</option>
+                <option value="Tarjeta">Tarjeta de crédito/débito</option>
+                <option value="Transferencia">Transferencia bancaria</option>
+                <option value="Otro">Otro</option>
+              </select>
+              <div *ngIf="reservacionForm.get('metodo_pago')?.invalid && reservacionForm.get('metodo_pago')?.touched" class="invalid-feedback">
+                Debe seleccionar un método de pago
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="mb-3">
+              <label for="monto_pagado" class="form-label">Monto pagado</label>
+              <div class="input-group">
+                <span class="input-group-text">$</span>
+                <input type="number" id="monto_pagado" class="form-control" formControlName="monto_pagado"
+                  [ngClass]="{'is-invalid': reservacionForm.get('monto_pagado')?.invalid && reservacionForm.get('monto_pagado')?.touched}">
+                <div *ngIf="reservacionForm.get('monto_pagado')?.invalid && reservacionForm.get('monto_pagado')?.touched" class="invalid-feedback">
+                  El monto pagado debe ser mayor o igual a 0
+                </div>
+              </div>
+              <small class="form-text text-muted">Puede ser un adelanto o el monto total.</small>
+            </div>
+          </div>
+        </div>
+
+        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+          <button type="button" class="btn btn-secondary me-2" (click)="cancelar()">Cancelar</button>
+          <button type="submit" class="btn btn-primary" [disabled]="loading">
+            <span *ngIf="loading" class="spinner-border spinner-border-sm me-1" role="status"></span>
+            Crear reservación
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

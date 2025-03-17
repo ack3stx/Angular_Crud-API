@@ -1,0 +1,50 @@
+<div class="container">
+    <div class="row justify-content-center mt-5">
+      <div class="col-md-6">
+        <div class="card shadow">
+          <div class="card-body">
+            <h2 class="text-center mb-4">Verificación de Correo</h2>
+            
+            <!-- Alert Messages -->
+            <div *ngIf="error" class="alert alert-danger alert-dismissible fade show" role="alert">
+              {{ error }}
+              <button type="button" class="btn-close" (click)="error = ''"></button>
+            </div>
+  
+            <div *ngIf="success" class="alert alert-success alert-dismissible fade show" role="alert">
+              {{ success }}
+              <button type="button" class="btn-close" (click)="success = ''"></button>
+            </div>
+  
+            <form [formGroup]="verificationForm" (ngSubmit)="onSubmit()">
+              <div class="mb-4">
+                <label class="form-label">Código de Verificación</label>
+                <input type="text" 
+                       class="form-control form-control-lg text-center" 
+                       formControlName="code"
+                       maxlength="6"
+                       placeholder="Ingrese el código de 6 dígitos">
+                <div *ngIf="verificationForm.get('code')?.errors?.['required'] && verificationForm.get('code')?.touched" 
+                     class="text-danger">
+                  El código es requerido
+                </div>
+                <div *ngIf="verificationForm.get('code')?.errors?.['minlength']" 
+                     class="text-danger">
+                  El código debe tener 6 dígitos
+                </div>
+              </div>
+  
+              <div class="d-grid">
+                <button type="submit" 
+                        class="btn btn-primary btn-lg"
+                        [disabled]="verificationForm.invalid || loading">
+                  <span *ngIf="loading" class="spinner-border spinner-border-sm me-2"></span>
+                  Verificar
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>

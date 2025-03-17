@@ -1,27 +1,45 @@
-import { Component, inject } from '@angular/core';
+import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterModule } from '@angular/router';
+import { RouterModule } from '@angular/router';
 import { AuthService } from '../../../core/services/auth/auth.service';
 
 @Component({
   selector: 'app-navbar',
-  standalone: true,
-  imports: [CommonModule, RouterModule],
   templateUrl: './navbar.component.html',
-  styleUrls: ['./navbar.component.css']
+  styleUrls: ['./navbar.component.css'],
+  standalone: true,
+  imports: [CommonModule, RouterModule]
 })
 export class NavbarComponent {
-  private router = inject(Router);
-  private authService = inject(AuthService);
+  constructor(private authService: AuthService) {}
 
-  // Método para verificar si está logueado
   isLoggedIn(): boolean {
-    return !!localStorage.getItem('token');
+    return this.authService.isLoggedIn();
   }
 
-  // Método para cerrar sesión
+  isAdmin(): boolean {
+    return this.isLoggedIn() && this.authService.getUserRole() === 2;
+  }
+
+  isUser(): boolean {
+    return this.isLoggedIn() && this.authService.getUserRole() === 3;
+  }
+
+  isGuest(): boolean {
+    return !this.isLoggedIn() || this.authService.getUserRole() === 1;
+  }
+
+  getRoleText(): string {
+    const role = this.authService.getUserRole();
+    switch(role) {
+      case 2: return 'Administrador';
+      case 3: return 'Usuario';
+      case 1: return 'Invitado';
+      default: return '';
+    }
+  }
+
   logout(): void {
-    localStorage.removeItem('token');
-    this.router.navigate(['/login']);
+    this.authService.logout();
   }
 }

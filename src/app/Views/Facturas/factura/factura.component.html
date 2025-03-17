@@ -1,0 +1,101 @@
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h2>Facturas</h2>
+      <!-- Mostrar botón de nueva factura solo para administradores -->
+      <button *ngIf="isAdmin()" class="btn btn-primary" routerLink="/facturas/crear">
+        <i class="bi bi-plus-circle"></i> Nueva Factura
+      </button>
+    </div>
+  
+    <!-- Mensaje de error -->
+    <div *ngIf="error" class="alert alert-danger alert-dismissible fade show" role="alert">
+      {{ error }}
+      <button type="button" class="btn-close" (click)="error = ''"></button>
+    </div>
+  
+    <!-- Spinner de carga -->
+    <div *ngIf="loading" class="d-flex justify-content-center my-5">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Cargando...</span>
+      </div>
+    </div>
+  
+    <!-- Tabla de facturas -->
+    <div class="card" *ngIf="!loading">
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th>Reservación</th>
+                <th>Método de Pago</th>
+                <th class="text-end">Monto</th>
+                <th class="text-center">Estado</th>
+                <th *ngIf="isAdmin()" class="text-center">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let factura of paginaActual; let i = index">
+                <td>{{ factura.reservacion_id }}</td>
+                <td>{{ factura.metodo_pago }}</td>
+                <td class="text-end">{{ factura.monto_pagado | currency }}</td>
+                <td class="text-center">
+                  <span [ngClass]="{
+                    'badge rounded-pill text-bg-success': factura.estado === 'Pagada',
+                    'badge rounded-pill text-bg-warning': factura.estado === 'Pendiente',
+                    'badge rounded-pill text-bg-danger': factura.estado === 'Cancelada'
+                  }">
+                    {{ factura.estado }}
+                  </span>
+                </td>
+                <td *ngIf="isAdmin()" class="text-center">
+                  <div class="btn-group">
+                    <a class="btn btn-sm btn-warning me-1"
+                       [routerLink]="['/facturas/editar', factura.id]"
+                       title="Editar factura">
+                      <i class="bi bi-pencil"></i> Editar
+                    </a>
+                    <button class="btn btn-sm btn-danger"
+                            (click)="eliminarFactura(factura.id)"
+                            title="Eliminar factura">
+                      <i class="bi bi-trash"></i> Eliminar
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          
+          <div *ngIf="paginaActual.length === 0" class="text-center py-3">
+            No hay facturas disponibles.
+          </div>
+  
+          <!-- Paginación simple -->
+          <div class="d-flex justify-content-between align-items-center p-2" *ngIf="facturas.length > 0">
+            <div>
+              <select class="form-select form-select-sm" style="width: auto" (change)="cambiarRegistros($event)">
+                <option value="5" [selected]="registros === 5">5 por página</option>
+                <option value="10" [selected]="registros === 10">10 por página</option>
+                <option value="15" [selected]="registros === 15">15 por página</option>
+              </select>
+            </div>
+            
+            <div>
+              <span>
+                Página {{ pagina }} de {{ totalPaginas }} ({{ facturas.length }} registros)
+              </span>
+            </div>
+  
+            <div>
+              <button class="btn btn-sm btn-outline-primary me-2" [disabled]="pagina === 1" (click)="anterior()">
+                <i class="bi bi-chevron-left"></i> Anterior
+              </button>
+              <button class="btn btn-sm btn-outline-primary" [disabled]="pagina === totalPaginas" (click)="siguiente()">
+                Siguiente <i class="bi bi-chevron-right"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>

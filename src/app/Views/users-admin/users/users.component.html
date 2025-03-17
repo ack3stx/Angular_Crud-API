@@ -1,0 +1,81 @@
+<div class="container mt-4">
+    <h2>Gestión de Usuarios</h2>
+  
+    <!-- Messages -->
+    <div *ngIf="error" class="alert alert-danger alert-dismissible fade show" role="alert">
+      {{ error }}
+      <button type="button" class="btn-close" (click)="clearMessages()"></button>
+    </div>
+  
+    <div *ngIf="success" class="alert alert-success alert-dismissible fade show" role="alert">
+      {{ success }}
+      <button type="button" class="btn-close" (click)="clearMessages()"></button>
+    </div>
+  
+    <!-- Loading spinner -->
+    <div *ngIf="loading" class="text-center p-3">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Cargando...</span>
+      </div>
+    </div>
+  
+    <!-- Users table -->
+    <div class="card" *ngIf="!loading">
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>Email</th>
+                <th>Rol</th>
+                <th>Estado</th>
+                <th>Fecha Registro</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let user of users">
+                <td>{{ user.name }}</td>
+                <td>{{ user.email }}</td>
+                <td>
+                  <span class="badge" [ngClass]="{
+                    'bg-primary': user.rol === '2',
+                    'bg-success': user.rol === '3'
+                  }">
+                    {{ getRoleName(user.rol) }}
+                  </span>
+                </td>
+                <td>
+                  <span class="badge" [ngClass]="{
+                    'bg-success': user.estado === 'activo',
+                    'bg-danger': user.estado === 'inactivo'
+                  }">
+                    {{ user.estado }}
+                  </span>
+                </td>
+                <td>{{ formatDate(user.created_at) }}</td>
+                <td>
+                  <div class="btn-group" role="group">
+                    <button *ngIf="user.estado === 'activo'"
+                            class="btn btn-danger btn-sm" 
+                            (click)="disableUser(user)">
+                      <i class="bi bi-person-x-fill"></i> Desactivar
+                    </button>
+                    <button *ngIf="user.estado === 'inactivo'"
+                            class="btn btn-success btn-sm" 
+                            (click)="enableUser(user)">
+                      <i class="bi bi-person-check-fill"></i> Activar
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div *ngIf="users.length === 0" class="text-center py-3">
+            No hay usuarios registrados
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>

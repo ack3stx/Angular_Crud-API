@@ -1,45 +1,87 @@
 .dashboard-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 1.5rem;
-    padding: 1.5rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
+  padding: 2rem;
+  background-color: #f8f9fa;
+}
+
+.card {
+  background: white;
+  border-radius: 15px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.card-content {
+  padding: 2rem;
+  position: relative;
+  text-align: center;
+}
+
+.card h3 {
+  color: #2c3e50;
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+  font-weight: 500;
+}
+
+.number {
+  font-size: 2.5rem;
+  font-weight: 600;
+  color: #c8a97e;
+  margin: 1rem 0;
+}
+
+.card-icon {
+  font-size: 2rem;
+  color: #c8a97e;
+  opacity: 0.2;
+  position: absolute;
+  bottom: 1rem;
+  right: 1rem;
+  transition: opacity 0.3s ease;
+}
+
+.card:hover .card-icon {
+  opacity: 0.8;
+}
+
+/* Colores específicos para cada tarjeta */
+.card:nth-child(1) {
+  border-top: 4px solid #957B5F;
+}
+
+.card:nth-child(2) {
+  border-top: 4px solid #C8A97E;
+}
+
+.card:nth-child(3) {
+  border-top: 4px solid #A67B5B;
+}
+
+.card:nth-child(4) {
+  border-top: 4px solid #D4B483;
+}
+
+@media (max-width: 768px) {
+  .dashboard-grid {
+      grid-template-columns: 1fr;
+      padding: 1rem;
   }
-  
-  .card {
-    background: white;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease;
-  }
-  
-  .card:hover {
-    transform: translateY(-5px);
-  }
-  
+
   .card-content {
-    padding: 1.5rem;
-    position: relative;
-    text-align: center;
+      padding: 1.5rem;
   }
-  
-  .card h3 {
-    color: #666;
-    margin: 0 0 1rem 0;
-    font-size: 1.1rem;
-  }
-  
+
   .number {
-    font-size: 2rem;
-    font-weight: bold;
-    color: #2c3e50;
-    margin: 0;
+      font-size: 2rem;
   }
-  
-  .card-icon {
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
-    font-size: 1.5rem;
-    color: #3498db;
-    opacity: 0.3;
-  }
+}

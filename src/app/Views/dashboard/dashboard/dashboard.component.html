@@ -1,33 +1,46 @@
-<div class="dashboard-grid">
-    <div class="card">
-      <div class="card-content">
-        <h3>Usuarios Activos</h3>
-        <p class="number">1,234</p>
-        <i class="fas fa-users card-icon"></i>
-      </div>
-    </div>
-  
-    <div class="card">
-      <div class="card-content">
-        <h3>Ventas Totales</h3>
-        <p class="number">$45,678</p>
-        <i class="fas fa-shopping-cart card-icon"></i>
-      </div>
-    </div>
-  
-    <div class="card">
-      <div class="card-content">
-        <h3>Nuevos Pedidos</h3>
-        <p class="number">89</p>
-        <i class="fas fa-box card-icon"></i>
-      </div>
-    </div>
-  
-    <div class="card">
-      <div class="card-content">
-        <h3>Ingresos Mensuales</h3>
-        <p class="number">$12,345</p>
-        <i class="fas fa-chart-line card-icon"></i>
-      </div>
+<!-- Admin Dashboard -->
+<div class="container mt-4" *ngIf="isAdmin()">
+  <div class="card">
+    <div class="card-body text-center">
+      <h2 class="card-title">Bienvenido al Panel de Administración</h2>
+      <p class="card-text">Sistema de Gestión Hotelera</p>
+      <hr>
+      <p>Desde aquí podrás gestionar habitaciones, empleados y reservaciones.</p>
     </div>
   </div>
+</div>
+
+<!-- User Dashboard -->
+<div class="dashboard-grid" *ngIf="isUser()">
+  <div class="card">
+    <div class="card-content">
+      <h3>Nuestras Suites</h3>
+      <p class="number">5 Tipos</p>
+      <i class="fas fa-bed card-icon"></i>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-content">
+      <h3>Servicios Premium</h3>
+      <p class="number">12+</p>
+      <i class="fas fa-concierge-bell card-icon"></i>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-content">
+      <h3>Restaurantes</h3>
+      <p class="number">3</p>
+      <i class="fas fa-utensils card-icon"></i>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-content">
+      <h3>Experiencias</h3>
+      <p class="number">8+</p>
+      <i class="fas fa-star card-icon"></i>
+    </div>
+  </div>
+</div>

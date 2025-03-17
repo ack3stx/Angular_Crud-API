@@ -1,0 +1,75 @@
+<div class="container mt-4">
+    <div class="card">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <h2>Editar Empleado</h2>
+      </div>
+      <div class="card-body">
+        <!-- Error message -->
+        <div *ngIf="error" class="alert alert-danger alert-dismissible fade show" role="alert">
+          {{ error }}
+          <button type="button" class="btn-close" (click)="error = ''"></button>
+        </div>
+  
+        <!-- Loading spinner -->
+        <div *ngIf="loading" class="text-center p-3">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Cargando...</span>
+          </div>
+        </div>
+  
+        <form [formGroup]="empleadoForm" (ngSubmit)="onSubmit()" *ngIf="!loading">
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="nombre" class="form-label">Nombre</label>
+              <input type="text" id="nombre" class="form-control" formControlName="nombre">
+              <div *ngIf="empleadoForm.get('nombre')?.invalid && empleadoForm.get('nombre')?.touched" class="text-danger">
+                El nombre es requerido.
+              </div>
+            </div>
+            
+            <div class="col-md-6 mb-3">
+              <label for="apellido" class="form-label">Apellido</label>
+              <input type="text" id="apellido" class="form-control" formControlName="apellido">
+              <div *ngIf="empleadoForm.get('apellido')?.invalid && empleadoForm.get('apellido')?.touched" class="text-danger">
+                El apellido es requerido.
+              </div>
+            </div>
+          </div>
+          
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="correo" class="form-label">Email</label>
+              <input type="email" id="correo" class="form-control" formControlName="correo">
+              <div *ngIf="empleadoForm.get('correo')?.invalid && empleadoForm.get('correo')?.touched" class="text-danger">
+                Ingrese un email válido.
+              </div>
+            </div>
+            
+            <div class="col-md-6 mb-3">
+              <label for="telefono" class="form-label">Teléfono</label>
+              <input type="text" id="telefono" class="form-control" formControlName="telefono">
+              <div *ngIf="empleadoForm.get('telefono')?.invalid && empleadoForm.get('telefono')?.touched" class="text-danger">
+                El teléfono es requerido.
+              </div>
+            </div>
+          </div>
+          
+          <div class="mb-3">
+            <label for="direccion" class="form-label">Dirección</label>
+            <input type="text" id="direccion" class="form-control" formControlName="direccion">
+            <div *ngIf="empleadoForm.get('direccion')?.invalid && empleadoForm.get('direccion')?.touched" class="text-danger">
+              La dirección es requerida.
+            </div>
+          </div>
+          
+          <div class="d-flex justify-content-end">
+            <button type="button" class="btn btn-secondary me-2" (click)="cancelar()">Cancelar</button>
+            <button type="submit" class="btn btn-primary" [disabled]="empleadoForm.invalid || loading">
+              <span *ngIf="loading" class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+              Actualizar
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>

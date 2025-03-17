@@ -1,0 +1,49 @@
+<div class="container mt-4">
+    <h2 class="mb-4">Lista de Habitaciones</h2>
+  
+    <!-- Error Alert -->
+    <div *ngIf="error" class="alert alert-danger alert-dismissible fade show" role="alert">
+      {{ error }}
+      <button type="button" class="btn-close" (click)="error = ''"></button>
+    </div>
+  
+    <!-- Loading Spinner -->
+    <div *ngIf="loading" class="text-center my-4">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Cargando...</span>
+      </div>
+    </div>
+  
+    <!-- Habitaciones Table -->
+    <div class="card" *ngIf="!loading">
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th>Número</th>
+                <th>Tipo</th>
+                <th>Precio</th>
+                <th>Descripción</th>
+                <th>Fecha Creación</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let habitacion of habitaciones">
+                <td>{{ habitacion.numero_habitacion }}</td>
+                <td>{{ habitacion.tipo_habitacion }}</td>
+                <td>${{ habitacion.precio_habitacion }}</td>
+                <td>{{ habitacion.descripcion_habitacion }}</td>
+                <td>{{ habitacion.created_at | date:'dd/MM/yyyy' }}</td>
+              </tr>
+            </tbody>
+          </table>
+  
+          <!-- Empty State -->
+          <div *ngIf="habitaciones.length === 0" class="text-center py-4">
+            <p class="text-muted mb-0">No hay habitaciones disponibles</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
