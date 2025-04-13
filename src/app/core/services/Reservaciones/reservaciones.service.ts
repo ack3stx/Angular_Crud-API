@@ -5,12 +5,13 @@ import { Reservacion } from '../../models/reservacion';
 import { ReservacionUpdate } from '../../models/reservacion-update';
 import { ReservacionResponse } from '../../models/reservacion-response';
 import { ReservacionListResponse } from '../../models/reservacion-list-response';  // Nuevo import
+import { environment} from '../../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ReservacionesService {
-  private url = 'http://127.0.0.1:8000/api/v1/Reservacion';
+  private url = environment.apiUrl + '/v1/Reservacion';
 
   constructor(private http: HttpClient) { }
 
@@ -45,19 +46,16 @@ export class ReservacionesService {
     );
   }
   
-  cancelarReservacion(id: number): Observable<Reservacion> {
-    return this.http.put<Reservacion>(`${this.url}/cancelar/${id}`, {});
+  EliminarReservacion(id: number): Observable<Reservacion> {
+    return this.http.delete<Reservacion>(`${this.url}/${id}`, {});
   }
   
-  // Método actualizado para manejar el nuevo formato de respuesta
   todaslasreservaciones(): Observable<Reservacion[]> {
     return this.http.get<ReservacionListResponse>(this.url).pipe(
       map((response: ReservacionListResponse) => {
         if (response.success) {
-          // Extraer solo los objetos "reservacion" del array de datos
           return response.data.map(item => {
             const reservacion = {...item.reservacion};
-            // Opcionalmente, podemos agregar los datos relacionados a cada reservación
             reservacion.huespedData = item.huesped;
             reservacion.habitacionData = item.habitacion || undefined;
             return reservacion;

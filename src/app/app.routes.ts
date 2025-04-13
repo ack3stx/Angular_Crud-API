@@ -1,176 +1,233 @@
 import { Routes } from '@angular/router';
+
+// Auth Components
 import { LoginComponent } from './Views/auth/login/login.component';
 import { RegisterComponent } from './Views/auth/register/register.component';
-import { WelcomeComponent } from './Views/welcome/welcome.component';
-import { DashboardComponent } from './Views/dashboard/dashboard/dashboard.component';
-import { authTokenGuard } from './core/guards/auth-token.guard';
-import { loginGuard } from './core/guards/login.guard';
-import { HuespedComponent } from './Views/huesped/huesped.component';
-import { WelcomeAdminComponent } from './Views/admin/welcome-admin/welcome-admin.component';
-import { AdminGuard } from './core/guards/admin-guard.guard';
-import {HabitacionesComponent} from './Views/Habitacion/habitaciones/habitaciones.component';
-import {ReservasUserComponent} from './Views/user-reservas/reservas-user/reservas-user.component';
-import { EmpleadoUserComponent} from './Views/user-empleado/empleado-user/empleado-user.component';
-import { MantenimientoComponent } from './Views/Mantenimiento/mantenimiento/mantenimiento.component';
-import { UsersComponent } from './Views/users-admin/users/users.component';
 import { AuthCodeComponent } from './Views/auth/auth-code/auth-code.component';
-import { UserHabitacionesComponent } from './Views/user-habitaciones/user-habitaciones.component';
-import { UserHuespedComponent } from './Views/user-huesped/user-huesped.component';
+import { WelcomeComponent } from './Views/welcome/welcome.component';
+
+// Dashboard Components
+import { DashboardComponent } from './Views/dashboard/dashboard/dashboard.component';
+import { WelcomeAdminComponent } from './Views/admin/welcome-admin/welcome-admin.component';
+
+// Users Management
+import { UsersComponent } from './Views/users-admin/users/users.component';
+import { EditUserComponent } from './Views/users-admin/edit-user/edit-user.component';
+
+// Habitaciones Components
+import { HabitacionesComponent } from './Views/Habitacion/habitaciones/habitaciones.component';
 import { HabitacionCrearComponent } from './Views/Habitacion/habitacion-crear/habitacion-crear.component';
 import { HabitacionEditarComponent } from './Views/Habitacion/habitacion-editar/habitacion-editar.component';
 
+// Empleados Components
 import { EmpleadosComponent } from './Views/Empleado/empleados/empleados.component';
 import { EmpleadoCrearComponent } from './Views/Empleado/empleado-crear/empleado-crear.component';
 import { EmpleadoEditarComponent } from './Views/Empleado/empleado-editar/empleado-editar.component';
 
-
+// Reservaciones Components
 import { ReservarHistorialComponent } from './Views/Reservacion/reservar-historial/reservar-historial.component';
 import { ReservarComponent } from './Views/Reservacion/reservar/reservar.component';
 import { ReservaractualizarComponent } from './Views/Reservacion/reservar-actualizar/reservar-actualizar.component';
 
-
-import { FacturaComponent} from './Views/Facturas/factura/factura.component';
+// Facturas Components
+import { FacturaComponent } from './Views/Facturas/factura/factura.component';
 import { CrearFacturaComponent } from './Views/Facturas/crear-factura/crear-factura.component';
 import { EditarFacturaComponent } from './Views/Facturas/editar-factura/editar-factura.component';
 
+// Huespedes Components
+import { HuespedComponent } from './Views/Huespedes/huesped/huesped.component';
+import { CrearHuespedComponent } from './Views/Huespedes/crearhuesped/crearhuesped.component';
+import { EditarHuespedComponent } from './Views/Huespedes/editar-huesped/editar-huesped.component';
+
+// Mantenimiento Components
+import { MantenimientoComponent } from './Views/Mantenimiento/mantenimiento/mantenimiento.component';
+import { CrearMantenimientoComponent } from './Views/Mantenimiento/crear-mantenimiento/crear-mantenimiento.component';
+import { EditarmantenimientoComponent } from './Views/Mantenimiento/editarmantenimiento/editarmantenimiento.component';
+
+// Auditoria Components
+import { AuditoriaComponent } from './Views/auditoria/auditoria.component';
+
+// Guards
+import { authTokenGuard } from './core/guards/auth-token.guard';
+import { loginGuard } from './core/guards/login.guard';
+import { AdminGuard } from './core/guards/admin-guard.guard';
+
 export const routes: Routes = [
+  // Rutas públicas (accesibles sin autenticación)
+  {
+    path: '',
+    canActivate: [loginGuard],
+    children: [
+      { path: '', component: WelcomeComponent },
+      { path: 'login', component: LoginComponent },
+      { path: 'register', component: RegisterComponent },
+      { path: 'confirm-acount', component: AuthCodeComponent }
+    ]
+  },
 
-    { path: 'habitaciones', component: HabitacionesComponent , canActivate: [authTokenGuard] },
-    { path: 'habitaciones/crear', component: HabitacionCrearComponent , canActivate: [authTokenGuard] },
-    { path: 'habitaciones/editar/:id', component: HabitacionEditarComponent , canActivate: [authTokenGuard] },
+  // Rutas protegidas (requieren autenticación)
+  {
+    path: 'dashboard',
+    component: DashboardComponent,
+    canActivate: [authTokenGuard]
+  },
 
-    { 
-        path: 'empleados', 
+  // Rutas de administración (requieren rol de administrador)
+  {
+    path: 'admin',
+    canActivate: [AdminGuard],
+    children: [
+      { path: 'dashboard', component: WelcomeAdminComponent },
+      { path: 'users', component: UsersComponent },
+      { path: 'users/edit/:id', component: EditUserComponent },
+      { path: 'auditoria', component: AuditoriaComponent }
+    ]
+  },
+
+  // Módulo de Habitaciones
+  {
+    path: 'habitacion',
+    children: [
+      // Ruta de visualización - cualquier usuario autenticado
+      { 
+        path: '', 
+        component: HabitacionesComponent, 
+        canActivate: [authTokenGuard] 
+      },
+      // Rutas de creación y edición - solo administradores
+      { 
+        path: 'crear', 
+        component: HabitacionCrearComponent, 
+        canActivate: [authTokenGuard, AdminGuard] 
+      },
+      { 
+        path: 'editar/:id', 
+        component: HabitacionEditarComponent, 
+        canActivate: [authTokenGuard, AdminGuard] 
+      }
+    ]
+  },
+
+  // Módulo de Empleados
+  {
+    path: 'empleados',
+    children: [
+      // Ruta de visualización - cualquier usuario autenticado
+      { 
+        path: '', 
         component: EmpleadosComponent, 
-        canActivate: [authTokenGuard] // Protección para todos los usuarios autenticados
+        canActivate: [authTokenGuard] 
       },
+      // Rutas de creación y edición - solo administradores
       { 
-        path: 'empleados/crear', 
+        path: 'crear', 
         component: EmpleadoCrearComponent, 
-        canActivate: [authTokenGuard] // Solo administradores
+        canActivate: [authTokenGuard, AdminGuard] 
       },
       { 
-        path: 'empleados/editar/:id', 
+        path: 'editar/:id', 
         component: EmpleadoEditarComponent, 
-        canActivate: [authTokenGuard] // Solo administradores
-      },
+        canActivate: [authTokenGuard, AdminGuard] 
+      }
+    ]
+  },
 
+  // Módulo de Reservaciones
+  {
+    path: 'reservaciones',
+    children: [
+      // Ruta de visualización - cualquier usuario autenticado
       { 
-        path: 'reservaciones', 
+        path: '', 
         component: ReservarHistorialComponent, 
-        canActivate: [authTokenGuard]  // Accesible para usuarios autenticados
+        canActivate: [authTokenGuard] 
       },
+      // Rutas de creación y edición - solo administradores
       { 
-        path: 'reservaciones/crear', 
+        path: 'crear', 
         component: ReservarComponent, 
-        canActivate: [authTokenGuard]  // Solo administradores
+        canActivate: [authTokenGuard, AdminGuard] 
       },
       { 
-        path: 'reservaciones/editar/:id', 
+        path: 'editar/:id', 
         component: ReservaractualizarComponent, 
-        canActivate: [authTokenGuard]  // Solo administradores
-      },
+        canActivate: [authTokenGuard, AdminGuard] 
+      }
+    ]
+  },
 
-      {
-        path: 'facturas',
-        component: FacturaComponent,
-        canActivate: [authTokenGuard]
+  // Módulo de Facturas
+  {
+    path: 'facturas',
+    children: [
+      // Ruta de visualización - cualquier usuario autenticado
+      { 
+        path: '', 
+        component: FacturaComponent, 
+        canActivate: [authTokenGuard] 
       },
-      {
-        path: 'facturas/crear',
-        component: CrearFacturaComponent,
-        canActivate: [authTokenGuard]
+      // Rutas de creación y edición - solo administradores
+      { 
+        path: 'crear', 
+        component: CrearFacturaComponent, 
+        canActivate: [authTokenGuard, AdminGuard] 
       },
-      {
-        path: 'facturas/editar/:id',
-        component: EditarFacturaComponent,
-        canActivate: [authTokenGuard]
-      },
+      { 
+        path: 'editar/:id', 
+        component: EditarFacturaComponent, 
+        canActivate: [authTokenGuard, AdminGuard] 
+      }
+    ]
+  },
 
-    {
-        path: 'login',
-        component: LoginComponent,
-        canActivate: [loginGuard]
-    },
-    {
-        path: 'register',
-        component: RegisterComponent,
-        canActivate: [loginGuard]
-    },
-    {
-        path : '',
-        component : WelcomeComponent,
-        canActivate : [loginGuard]
-    },
-    {
-        path : 'confirm-acount',
-        component : AuthCodeComponent,   
-        canActivate : [loginGuard]
-    },
-    {
-        path : 'huesped',
-        component : HuespedComponent,
-        canActivate : [authTokenGuard]
-    },
-    {
-        path : 'lista_habitaciones',
-        component : UserHabitacionesComponent,
-        canActivate : [authTokenGuard]
+  // Módulo de Huéspedes
+  {
+    path: 'huespedes',
+    children: [
+      // Ruta de visualización - cualquier usuario autenticado
+      { 
+        path: '', 
+        component: HuespedComponent, 
+        canActivate: [authTokenGuard] 
+      },
+      // Rutas de creación y edición - solo administradores
+      { 
+        path: 'crear', 
+        component: CrearHuespedComponent, 
+        canActivate: [authTokenGuard, AdminGuard] 
+      },
+      { 
+        path: 'editar/:id', 
+        component: EditarHuespedComponent, 
+        canActivate: [authTokenGuard, AdminGuard] 
+      }
+    ]
+  },
 
-    },
-    {
-        path : 'lista_huespedes',
-        component : UserHuespedComponent,
-        canActivate : [authTokenGuard]
-    },
-    {
-        path : 'reservar',
-        component : ReservarComponent,
-        canActivate : [authTokenGuard]
-    },
-    {
-        path: 'historial',
-        component: ReservarHistorialComponent,
-        canActivate: [authTokenGuard]
-    },
-    {
-        path: 'dashboard',
-        component: DashboardComponent,
-        canActivate: [authTokenGuard]
-    },
-    {
-        path: 'habitacion',
-        component: HabitacionesComponent,
-        canActivate: [authTokenGuard]
-    },
-    {
-        path: 'lista_reservaciones',
-        component: ReservasUserComponent,
-        canActivate: [authTokenGuard]
-    },
-    {
-        path: 'lista_empleados',
-        component: EmpleadoUserComponent,
-        canActivate: [authTokenGuard]
-    },
-    {
-        path: 'lista_mantenimiento',
-        component: MantenimientoComponent,
-        canActivate: [authTokenGuard]
-    },
-    {
-        path: 'desabilitar',
-        component: UsersComponent,
-        canActivate: [authTokenGuard]
-    },
-    {
-        path: 'admin',
-        canActivate: [AdminGuard],
-        children: [
-            {
-                path: 'dashboard2',
-                component: WelcomeAdminComponent
-            }
-        ]
-    }
-]
+  // Módulo de Mantenimiento
+  {
+    path: 'mantenimientos',
+    children: [
+      // Ruta de visualización - cualquier usuario autenticado
+      { 
+        path: '', 
+        component: MantenimientoComponent, 
+        canActivate: [authTokenGuard] 
+      },
+      // Rutas de creación y edición - solo administradores
+      { 
+        path: 'crear', 
+        component: CrearMantenimientoComponent, 
+        canActivate: [authTokenGuard, AdminGuard] 
+      },
+      { 
+        path: 'editar/:id', 
+        component: EditarmantenimientoComponent, 
+        canActivate: [authTokenGuard, AdminGuard] 
+      }
+    ]
+  },
+
+  // Redireccionamiento y ruta genérica de "no encontrado"
+  { path: '**', redirectTo: '' }
+];

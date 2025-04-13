@@ -25,8 +25,14 @@ export class NavbarComponent {
     return this.isLoggedIn() && this.authService.getUserRole() === 3;
   }
 
+  // Corregido: Un usuario con rol 1 está logueado pero con restricciones
+  isRestrictedUser(): boolean {
+    return this.isLoggedIn() && this.authService.getUserRole() === 1;
+  }
+
+  // Corregido: Un invitado NO está logueado
   isGuest(): boolean {
-    return !this.isLoggedIn() || this.authService.getUserRole() === 1;
+    return !this.isLoggedIn();
   }
 
   getRoleText(): string {
@@ -34,7 +40,7 @@ export class NavbarComponent {
     switch(role) {
       case 2: return 'Administrador';
       case 3: return 'Usuario';
-      case 1: return 'Invitado';
+      case 1: return 'Acceso Restringido';
       default: return '';
     }
   }

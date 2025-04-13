@@ -14,6 +14,7 @@ import { AuthService } from '../../../core/services/auth/auth.service';
 export class AuthCodeComponent implements OnInit {
   verificationForm: FormGroup;
   loading = false;
+  resendingCode = false; // Nueva propiedad para controlar el estado del botón de reenvío
   error = '';
   success = '';
   token: string = '';
@@ -30,41 +31,78 @@ export class AuthCodeComponent implements OnInit {
   }
 
   ngOnInit() {
-    // Obtener el token de la URL
-    this.route.queryParams.subscribe(params => {
+    this.route.params.subscribe(params => {
       if (params['token']) {
         this.token = params['token'];
+        console.log('Token from route params:', this.token);
       } else {
-        this.error = 'Token no encontrado';
-        this.router.navigate(['/login']);
+        // Si no está en params, buscar en queryParams
+        this.route.queryParams.subscribe(queryParams => {
+          if (queryParams['token']) {
+            this.token = queryParams['token'];
+            console.log('Token from query params:', this.token);
+          } else {
+            this.error = 'Token no encontrado en la URL';
+          }
+        });
       }
     });
   }
 
-  // ...existing code...
-onSubmit() {
-  if (this.verificationForm.valid && this.token) {
-    this.loading = true;
+  resendVerificationCode() {
+    if (!this.token) {
+      this.error = 'No hay un token disponible para solicitar un nuevo código';
+      return;
+    }
+
+    this.resendingCode = true;
     this.error = '';
+    this.success = '';
+
+    console.log('Reenviando código con token:', this.token);
     
-    const verificationData = {
-      code: this.verificationForm.get('code')?.value,
-      token: this.token
-    };
-    
-    this.authService.verifyEmail(verificationData).subscribe({
-      next: () => {
-        this.success = 'Correo verificado exitosamente';
-        setTimeout(() => {
-          this.router.navigate(['/login']);
-        }, 2000);
+    this.authService.ResendVerificationCode(this.token).subscribe({
+      next: (response) => {
+        this.resendingCode = false;
+        this.success = 'Se ha enviado un nuevo código a su correo electrónico';
+        console.log('Respuesta al reenviar código:', response);
       },
       error: (err) => {
-        this.error = err.error.message || 'Error al verificar el código';
-        this.loading = false;
+        this.resendingCode = false;
+        this.error = err.error?.message || 'Error al solicitar un nuevo código';
+        console.error('Error al reenviar código:', err);
       }
     });
   }
-}
-// ...existing code...
+
+  onSubmit() {
+    if (this.verificationForm.valid && this.token) {
+      this.loading = true;
+      this.error = '';
+      
+      const verificationData = {
+        code: this.verificationForm.get('code')?.value,
+        token: this.token
+      };
+      
+      this.authService.verifyEmail(verificationData).subscribe({
+        next: () => {
+          this.loading = false;
+          this.success = 'Correo verificado exitosamente';
+          setTimeout(() => {
+            this.router.navigate(['/login']);
+          }, 2000);
+        },
+        error: (err) => {
+          this.loading = false;
+          
+          if (err.status === 429) {
+            this.error = 'Demasiados intentos fallidos. Por favor, espera 30 minutos antes de intentar nuevamente.';
+          } else {
+            this.error = err.error?.message || 'Error al verificar el código';
+          }
+        }
+      });
+    }
+  }
 }

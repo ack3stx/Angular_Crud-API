@@ -1,102 +1,109 @@
 <div class="container mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-      <h2>Nueva Factura</h2>
-      <button class="btn btn-outline-secondary" (click)="cancelar()">
-        <i class="bi bi-arrow-left"></i> Volver
-      </button>
-    </div>
-  
-    <!-- Mensaje de error -->
-    <div *ngIf="error" class="alert alert-danger alert-dismissible fade show" role="alert">
-      {{ error }}
-      <button type="button" class="btn-close" (click)="error = null"></button>
-    </div>
-  
-    <!-- Spinner de carga -->
-    <div *ngIf="loadingData" class="d-flex justify-content-center my-5">
-      <div class="spinner-border text-primary" role="status">
-        <span class="visually-hidden">Cargando...</span>
-      </div>
-    </div>
-  
-    <!-- Formulario de creación -->
-    <div class="card" *ngIf="!loadingData">
-      <div class="card-body">
-        <form [formGroup]="facturaForm" (ngSubmit)="onSubmit()">
-          <div class="row mb-3">
-            <div class="col-md-6">
-              <div class="mb-3">
-                <label for="reservacion_id" class="form-label">Numero De Reservacion</label>
-                <select id="reservacion_id" class="form-select" formControlName="reservacion_id"
-                  [ngClass]="{'is-invalid': facturaForm.get('reservacion_id')?.invalid && facturaForm.get('reservacion_id')?.touched}">
-                  <option value="">Seleccione una reservación</option>
-                  <option *ngFor="let reservacion of reservaciones" [value]="reservacion.id">
-                    #{{ reservacion.id }} - {{ reservacion.fecha_entrada | date:'dd/MM/yyyy' }}
-                  </option>
-                </select>
-                <div *ngIf="facturaForm.get('reservacion_id')?.invalid && facturaForm.get('reservacion_id')?.touched" class="invalid-feedback">
-                  Debe seleccionar una reservación
-                </div>
-              </div>
-            </div>
-  
-            <div class="col-md-6">
-              <div class="mb-3">
-                <label for="metodo_pago" class="form-label">Método de pago</label>
-                <select id="metodo_pago" class="form-select" formControlName="metodo_pago"
-                  [ngClass]="{'is-invalid': facturaForm.get('metodo_pago')?.invalid && facturaForm.get('metodo_pago')?.touched}">
-                  <option value="">Seleccione un método de pago</option>
-                  <option value="Efectivo">Efectivo</option>
-                  <option value="Tarjeta">Tarjeta de crédito/débito</option>
-                  <option value="Transferencia">Transferencia bancaria</option>
-                  <option value="Otro">Otro</option>
-                </select>
-                <div *ngIf="facturaForm.get('metodo_pago')?.invalid && facturaForm.get('metodo_pago')?.touched" class="invalid-feedback">
-                  Debe seleccionar un método de pago
-                </div>
-              </div>
-            </div>
-          </div>
-  
-          <div class="row mb-3">
-            <div class="col-md-6">
-              <div class="mb-3">
-                <label for="monto_pagado" class="form-label">Monto pagado</label>
-                <div class="input-group">
-                  <span class="input-group-text">$</span>
-                  <input type="number" id="monto_pagado" class="form-control" formControlName="monto_pagado"
-                    [ngClass]="{'is-invalid': facturaForm.get('monto_pagado')?.invalid && facturaForm.get('monto_pagado')?.touched}" step="0.01">
-                  <div *ngIf="facturaForm.get('monto_pagado')?.invalid && facturaForm.get('monto_pagado')?.touched" class="invalid-feedback">
-                    El monto pagado debe ser mayor a 0
-                  </div>
-                </div>
-              </div>
-            </div>
-  
-            <div class="col-md-6">
-              <div class="mb-3">
-                <label for="estado" class="form-label">Estado de la factura</label>
-                <select id="estado" class="form-select" formControlName="estado"
-                  [ngClass]="{'is-invalid': facturaForm.get('estado')?.invalid && facturaForm.get('estado')?.touched}">
-                  <option value="Pendiente">Pendiente</option>
-                  <option value="Pagada">Pagada</option>
-                  <option value="Cancelada">Cancelada</option>
-                </select>
-                <div *ngIf="facturaForm.get('estado')?.invalid && facturaForm.get('estado')?.touched" class="invalid-feedback">
-                  Debe seleccionar un estado
-                </div>
-              </div>
-            </div>
-          </div>
-  
-          <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-            <button type="button" class="btn btn-secondary me-2" (click)="cancelar()">Cancelar</button>
-            <button type="submit" class="btn btn-primary" [disabled]="loading">
-              <span *ngIf="loading" class="spinner-border spinner-border-sm me-1" role="status"></span>
-              Crear factura
-            </button>
-          </div>
-        </form>
-      </div>
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Nueva Factura</h2>
+    <button class="btn btn-outline-secondary" (click)="cancelar()">
+      <i class="bi bi-arrow-left"></i> Volver
+    </button>
+  </div>
+
+  <!-- Mensaje de error -->
+  <div *ngIf="error" class="alert alert-danger alert-dismissible fade show" role="alert">
+    {{ error }}
+    <button type="button" class="btn-close" (click)="error = null"></button>
+  </div>
+
+  <!-- Spinner de carga -->
+  <div *ngIf="loadingData" class="d-flex justify-content-center my-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Cargando...</span>
     </div>
   </div>
+
+  <!-- Formulario de creación -->
+  <div class="card" *ngIf="!loadingData">
+    <div class="card-body">
+      <form [formGroup]="facturaForm" (ngSubmit)="onSubmit()">
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <div class="mb-3">
+              <label for="reservacion_id" class="form-label">Numero De Reservacion</label>
+              <select id="reservacion_id" class="form-select" formControlName="reservacion_id"
+                [ngClass]="{'is-invalid': facturaForm.get('reservacion_id')?.invalid && facturaForm.get('reservacion_id')?.touched}">
+                <option value="">Seleccione una reservación</option>
+                <option *ngFor="let reservacion of reservaciones" [value]="reservacion.id">
+                  #{{ reservacion.id }} - {{ reservacion.fecha_entrada | date:'dd/MM/yyyy' }}
+                </option>
+              </select>
+              <div *ngIf="facturaForm.get('reservacion_id')?.invalid && facturaForm.get('reservacion_id')?.touched" class="invalid-feedback">
+                Debe seleccionar una reservación
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <div class="mb-3">
+              <label for="metodo_pago" class="form-label">Método de pago</label>
+              <select id="metodo_pago" class="form-select" formControlName="metodo_pago"
+                [ngClass]="{'is-invalid': facturaForm.get('metodo_pago')?.invalid && facturaForm.get('metodo_pago')?.touched}">
+                <option value="">Seleccione un método de pago</option>
+                <option value="Efectivo">Efectivo</option>
+                <option value="Tarjeta">Tarjeta de crédito/débito</option>
+                <option value="Transferencia">Transferencia bancaria</option>
+                <option value="Otro">Otro</option>
+              </select>
+              <div *ngIf="facturaForm.get('metodo_pago')?.invalid && facturaForm.get('metodo_pago')?.touched" class="invalid-feedback">
+                Debe seleccionar un método de pago
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <div class="mb-3">
+              <label for="monto_pagado" class="form-label">Monto pagado</label>
+              <div class="input-group">
+                <span class="input-group-text">$</span>
+                <input type="number" id="monto_pagado" class="form-control" formControlName="monto_pagado"
+                  [ngClass]="{'is-invalid': facturaForm.get('monto_pagado')?.invalid && facturaForm.get('monto_pagado')?.touched}" 
+                  step="0.01" min="0" [max]="getMontoPendiente()">
+                <div *ngIf="facturaForm.get('monto_pagado')?.invalid && facturaForm.get('monto_pagado')?.touched" class="invalid-feedback">
+                  <span *ngIf="facturaForm.get('monto_pagado')?.errors?.['required']">El monto pagado es obligatorio</span>
+                  <span *ngIf="facturaForm.get('monto_pagado')?.errors?.['min']">El monto pagado debe ser mayor a 0</span>
+                  <span *ngIf="facturaForm.get('monto_pagado')?.errors?.['max']">El monto no puede exceder el saldo pendiente (${{ getMontoPendiente().toFixed(2) }})</span>
+                </div>
+              </div>
+              <!-- Información del saldo pendiente -->
+              <small *ngIf="reservacionSeleccionada" class="form-text text-muted">
+                Saldo pendiente: ${{ getMontoPendiente().toFixed(2) }}
+              </small>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <div class="mb-3">
+              <label for="estado" class="form-label">Estado de la factura</label>
+              <select id="estado" class="form-select" formControlName="estado"
+                [ngClass]="{'is-invalid': facturaForm.get('estado')?.invalid && facturaForm.get('estado')?.touched}">
+                <option value="Pendiente">Pendiente</option>
+                <option value="Pagada">Pagada</option>
+                <option value="Cancelada">Cancelada</option>
+              </select>
+              <div *ngIf="facturaForm.get('estado')?.invalid && facturaForm.get('estado')?.touched" class="invalid-feedback">
+                Debe seleccionar un estado
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+          <button type="button" class="btn btn-secondary me-2" (click)="cancelar()">Cancelar</button>
+          <button type="submit" class="btn btn-primary" [disabled]="facturaForm.invalid || loading">
+            <span *ngIf="loading" class="spinner-border spinner-border-sm me-1" role="status"></span>
+            Crear factura
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

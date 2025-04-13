@@ -68,15 +68,24 @@ export class RegisterComponent {
       this.registerService.register(registerData).subscribe({
         next: (response) => {
           console.log('Server response:', response);
-          this.toastr.success('Registro exitoso');
+          this.toastr.success('Se Ah Enviado Un Correo A Su Email', 'Registro Exitoso', {
+            timeOut: 10000, // 10 segundos (valor en milisegundos)
+            progressBar: true, // Muestra una barra de progreso
+            closeButton: true // Agrega un botón para cerrar manualmente
+          });
           this.router.navigate(['/login']);
           this.FormularioRegister.reset();
         },
         error: (error) => {
           console.log('Error completo:', error);
           if (error.status === 422) {
-            console.log('Error de validación:', error.error);
-            this.toastr.error('Error de validación', 'Error');
+            console.log('Error de validación:', error.error);            
+            if (error.error?.errors?.email && 
+                error.error.errors.email.includes("The email has already been taken.")) {
+              this.toastr.error('Este correo electrónico ya está registrado', 'Error de registro');
+            } else {
+              this.toastr.error('Error de validación', 'Error');
+            }
           } else {
             this.toastr.error('Error en el registro', 'Error');
           }

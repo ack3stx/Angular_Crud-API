@@ -1,100 +1,138 @@
 .hero {
-  height: 100vh;
-  background: #1a1a1a;
+  min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+}
+
+/* Cambiado a fondo blanco */
+.bg-blue {
+  background-color: white;
+  box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.03);
 }
 
 .hero-content {
   text-align: center;
-  max-width: 1200px;
   padding: 2rem;
+  max-width: 800px;
+  z-index: 1;
+}
+
+/* Nuevos colores de texto */
+.text-white {
+  color: #1a4b8c; /* Azul medio */
+}
+
+.text-gold {
+  color: #d4af37; /* Dorado elegante */
+}
+
+.text-blue {
+  color: #1a4b8c;
 }
 
 .main-title {
   font-size: 4rem;
-  color: #ffffff;
+  font-weight: 700;
   margin-bottom: 1rem;
-  letter-spacing: 4px;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  color: #d4af37; /* Título en dorado */
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
 }
 
 .divider {
-  width: 100px;
-  height: 2px;
-  background: #d4af37;
-  margin: 2rem auto;
+  height: 3px;
+  width: 80px;
+  margin: 0 auto 1.5rem auto;
+  background-color: #1a4b8c; /* Divisor en azul */
 }
 
 .tagline {
   font-size: 1.5rem;
-  color: #ffffff;
-  margin-bottom: 3rem;
+  margin-bottom: 2rem;
+  font-style: italic;
+  color: #5c88c5; /* Azul claro para el tagline */
 }
 
 .features {
   display: flex;
   justify-content: center;
-  gap: 4rem;
-  margin: 4rem 0;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
 }
 
 .feature {
-  color: #ffffff;
+  margin: 0 1.5rem;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1rem;
 }
 
 .feature i {
   font-size: 2rem;
-  color: #d4af37;
+  margin-bottom: 0.5rem;
+  color: #d4af37; /* Iconos en dorado */
+}
+
+.feature span {
+  color: #1a4b8c; /* Texto de features en azul */
+  font-weight: 500;
 }
 
 .cta-buttons {
-  display: flex;
-  justify-content: center;
-  gap: 2rem;
-  margin-top: 3rem;
+  margin-top: 2rem;
 }
 
+/* Botón principal en azul con texto blanco */
 .btn-primary {
-  padding: 1rem 2rem;
-  background: #d4af37;
-  color: #1a1a1a;
+  padding: 0.8rem 2rem;
   border: none;
+  border-radius: 30px;
+  font-weight: 600;
+  margin: 0 0.5rem;
   cursor: pointer;
-  font-size: 1rem;
-  transition: transform 0.3s;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  background-color: #1a4b8c;
+  color: white;
 }
 
+/* Botón secundario en dorado con transparencia */
 .btn-secondary {
-  padding: 1rem 2rem;
+  padding: 0.8rem 2rem;
   background: transparent;
-  color: #ffffff;
-  border: 1px solid #ffffff;
+  border: 2px solid #d4af37;
+  border-radius: 30px;
+  font-weight: 600;
+  margin: 0 0.5rem;
   cursor: pointer;
-  font-size: 1rem;
-  transition: transform 0.3s;
+  transition: all 0.3s ease;
+  color: #d4af37;
 }
 
-.btn-primary:hover,
+.btn-primary:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 8px rgba(0,0,0,0.15);
+  background-color: #2a5ca0; /* Azul más claro al hover */
+}
+
 .btn-secondary:hover {
-  transform: translateY(-2px);
+  background-color: rgba(212, 175, 55, 0.1); /* Fondo dorado con transparencia */
+  transform: translateY(-3px);
+  color: #bf9b30; /* Dorado más oscuro al hover */
 }
 
+/* Adaptación responsive */
 @media (max-width: 768px) {
-  .features {
-    flex-direction: column;
-    gap: 2rem;
-  }
-
-  .cta-buttons {
-    flex-direction: column;
-  }
-
   .main-title {
-    font-size: 2.5rem;
+    font-size: 3rem;
+  }
+  
+  .feature {
+    margin: 1rem;
   }
 }

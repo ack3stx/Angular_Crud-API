@@ -1,23 +1,76 @@
 .table th {
-    white-space: nowrap;
+  white-space: nowrap;
+  background-color: #f8f9fa;
+  font-weight: 600;
+}
+
+.table td {
+  vertical-align: middle;
+  padding: 0.75rem;
+}
+
+.badge {
+  padding: 0.5em 1em;
+  font-size: 90%;
+  font-weight: 500;
+}
+
+.card {
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  border-radius: 0.5rem;
+  border: none;
+}
+
+.card-header {
+  background-color: #f8f9fa;
+  border-bottom: 1px solid rgba(0,0,0,0.1);
+}
+
+/* Estilo mejorado para los botones de acción */
+.action-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.action-button {
+  font-size: 0.85rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 4px;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  font-weight: 500;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.action-button i {
+  font-size: 0.9rem;
+}
+
+.table-responsive {
+  min-height: 300px;
+  overflow-x: auto;
+}
+
+/* Estilo para hacer la tabla más legible */
+.table {
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.table tbody tr:hover {
+  background-color: rgba(0,123,255,0.05);
+}
+
+/* Responsive para móviles */
+@media (max-width: 767px) {
+  .action-buttons {
+    flex-direction: column;
   }
   
-  .table td {
-    vertical-align: middle;
+  .action-button {
+    width: 100%;
+    margin-bottom: 4px;
   }
-  
-  .badge {
-    padding: 0.5em 1em;
-  }
-  
-  .card {
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-  }
-  
-  .btn-sm {
-    padding: 0.25rem 0.5rem;
-  }
-  
-  .table-responsive {
-    min-height: 300px;
-  }
+}

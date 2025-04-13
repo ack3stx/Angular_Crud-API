@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, NgZone } from '@angular/core';
 import { CommonModule, NgClass, CurrencyPipe } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -14,82 +14,126 @@ import { ToastrService } from 'ngx-toastr';
   standalone: true,
   imports: [CommonModule, NgClass, CurrencyPipe, RouterModule, FormsModule]
 })
-export class FacturaComponent implements OnInit {
+export class FacturaComponent implements OnInit, OnDestroy {
   facturas: Factura[] = [];
   loading: boolean = true;
   error: string | null = null;
   
-  // Variables para paginación
   pagina: number = 1;
   registros: number = 5;
   totalPaginas: number = 0;
   paginaActual: Factura[] = [];
+  actualizando: boolean = false;
+  lastUpdate: string = '';
 
+  private eventSource: EventSource | null = null;
+  
   constructor(
     private facturaService: FacturasService,
     private authService: AuthService,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private ngZone: NgZone
   ) {}
 
   ngOnInit(): void {
     this.cargarFacturas();
+    this.connectSSE();
   }
 
-  // Verificar si el usuario es administrador
+  ngOnDestroy(): void {
+    if (this.eventSource) {
+      this.eventSource.close();
+    }
+  }
+
   isAdmin(): boolean {
     const userRole = this.authService.getUserRole();
-    return Number(userRole) === 2; // 2 representa el rol de administrador
+    return Number(userRole) === 2;
   }
 
-  // Verificar si el usuario es cliente regular
   isUser(): boolean {
     const userRole = this.authService.getUserRole();
-    return Number(userRole) === 3; // 3 representa el rol de usuario normal
+    return Number(userRole) === 3;
+  }
+
+  connectSSE(): void {
+    const url = 'http://localhost:3333/stream-facturas';
+    this.eventSource = new EventSource(url);
+  
+    this.eventSource.onmessage = (event) => {
+      let data: any;
+      try {
+        data = JSON.parse(event.data);
+        console.log('Evento recibido:', data);
+        
+        this.ngZone.run(() => {
+          if (data && data.evento) {
+            switch (data.evento) {
+              case 'create':
+                this.toastr.success('Nueva factura registrada', 'Éxito');
+                break;
+              case 'updated':
+                this.toastr.info('Factura actualizada', 'Información');
+                break;
+              case 'deleted':
+                this.toastr.warning('Factura eliminada', 'Alerta');
+                break;
+              default:
+                console.log(`Evento desconocido: ${data.evento}`);
+            }
+          }
+          
+          // Siempre actualizar los datos independientemente del tipo de evento
+          this.cargarFacturas();
+          this.lastUpdate = new Date().toLocaleTimeString();
+        });
+      } catch (e) {
+        console.error('Error al procesar el evento:', e);
+      }
+    };
+  
+    // Mantener el handler de error
+    this.eventSource.onerror = (error) => {
+      console.error('Error en la conexión SSE:', error);
+      this.eventSource?.close();
+      
+      setTimeout(() => {
+        this.connectSSE();
+      }, 5000);
+    };
   }
 
   cargarFacturas(): void {
-    this.loading = true;
+    if (this.facturas.length === 0) {
+      this.loading = true;
+    }
+    this.actualizando = true;
     
-    // Tanto para administradores como para usuarios normales, cargar todas las facturas
     this.facturaService.obtenerFacturas().subscribe({
       next: (data) => {
-        this.facturas = data;
+        this.facturas = data.sort((a, b) => b.id - a.id);
         this.calcularPaginacion();
         this.loading = false;
+        this.actualizando = false;
+        this.lastUpdate = new Date().toLocaleTimeString();
       },
       error: (error) => {
         this.error = 'Error al cargar las facturas';
         this.loading = false;
-        console.error('Error:', error);
+        this.actualizando = false;
       }
     });
   }
 
-  // Método para calcular la paginación
   calcularPaginacion(): void {
     this.totalPaginas = Math.ceil(this.facturas.length / this.registros);
-    
-    // Si no hay datos, asegurarse de que hay al menos una página
-    if (this.totalPaginas === 0) {
-      this.totalPaginas = 1;
-    }
-    
-    // Asegurarse de que la página actual es válida
-    if (this.pagina > this.totalPaginas) {
-      this.pagina = this.totalPaginas;
-    } else if (this.pagina < 1) {
-      this.pagina = 1;
-    }
-    
-    // Calcular los índices de inicio y fin
+    if (this.totalPaginas === 0) this.totalPaginas = 1;
+    if (this.pagina > this.totalPaginas) this.pagina = this.totalPaginas;
     const inicio = (this.pagina - 1) * this.registros;
     const fin = Math.min(inicio + this.registros, this.facturas.length);
-    
-    // Obtener los elementos de la página actual
     this.paginaActual = this.facturas.slice(inicio, fin);
   }
 
-  // Métodos de paginación
   anterior(): void {
     if (this.pagina > 1) {
       this.pagina--;
@@ -104,28 +148,28 @@ export class FacturaComponent implements OnInit {
     }
   }
 
-  // Método para cambiar el número de registros por página
   cambiarRegistros(event: any): void {
     this.registros = parseInt(event.target.value);
-    this.pagina = 1; // Volver a la primera página
+    this.pagina = 1;
     this.calcularPaginacion();
   }
 
-  // Método para eliminar una factura
   eliminarFactura(id: number): void {
-    if (confirm('¿Estás seguro de que deseas eliminar esta factura? Esta acción no se puede deshacer.')) {
+    if (confirm('¿Estás seguro de que deseas eliminar esta factura?')) {
       this.facturaService.eliminarFactura(id).subscribe({
         next: () => {
-          this.toastr.success('Factura eliminada correctamente');
-          // Actualizar la lista de facturas
-          this.facturas = this.facturas.filter(f => f.id !== id);
-          this.calcularPaginacion();
+          this.cargarFacturas();
         },
         error: (error) => {
+          console.error('Error al eliminar:', error);
           this.toastr.error('Error al eliminar la factura');
-          console.error('Error:', error);
+          this.cargarFacturas();
         }
       });
     }
+  }
+
+  actualizarManualmente(): void {
+    this.cargarFacturas();
   }
 }

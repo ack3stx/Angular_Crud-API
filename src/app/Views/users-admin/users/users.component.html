@@ -1,81 +1,181 @@
 <div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
     <h2>Gestión de Usuarios</h2>
+    <button class="btn btn-outline-primary" (click)="refrescarDatos()" [disabled]="actualizando">
+      <span *ngIf="actualizando" class="spinner-border spinner-border-sm me-1" role="status"></span>
+      <i class="bi bi-arrow-clockwise me-1"></i> Actualizar
+    </button>
+  </div>
   
-    <!-- Messages -->
-    <div *ngIf="error" class="alert alert-danger alert-dismissible fade show" role="alert">
-      {{ error }}
-      <button type="button" class="btn-close" (click)="clearMessages()"></button>
-    </div>
+  <!-- Error and success messages -->
+  <div *ngIf="error" class="alert alert-danger alert-dismissible fade show" role="alert">
+    {{ error }}
+    <button type="button" class="btn-close" (click)="clearMessages()"></button>
+  </div>
   
-    <div *ngIf="success" class="alert alert-success alert-dismissible fade show" role="alert">
-      {{ success }}
-      <button type="button" class="btn-close" (click)="clearMessages()"></button>
-    </div>
+  <div *ngIf="success" class="alert alert-success alert-dismissible fade show" role="alert">
+    {{ success }}
+    <button type="button" class="btn-close" (click)="clearMessages()"></button>
+  </div>
   
-    <!-- Loading spinner -->
-    <div *ngIf="loading" class="text-center p-3">
-      <div class="spinner-border text-primary" role="status">
-        <span class="visually-hidden">Cargando...</span>
-      </div>
-    </div>
-  
-    <!-- Users table -->
-    <div class="card" *ngIf="!loading">
-      <div class="card-body">
-        <div class="table-responsive">
-          <table class="table table-striped">
-            <thead>
-              <tr>
-                <th>Nombre</th>
-                <th>Email</th>
-                <th>Rol</th>
-                <th>Estado</th>
-                <th>Fecha Registro</th>
-                <th>Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let user of users">
-                <td>{{ user.name }}</td>
-                <td>{{ user.email }}</td>
-                <td>
-                  <span class="badge" [ngClass]="{
-                    'bg-primary': user.rol === '2',
-                    'bg-success': user.rol === '3'
-                  }">
-                    {{ getRoleName(user.rol) }}
-                  </span>
-                </td>
-                <td>
-                  <span class="badge" [ngClass]="{
-                    'bg-success': user.estado === 'activo',
-                    'bg-danger': user.estado === 'inactivo'
-                  }">
-                    {{ user.estado }}
-                  </span>
-                </td>
-                <td>{{ formatDate(user.created_at) }}</td>
-                <td>
-                  <div class="btn-group" role="group">
-                    <button *ngIf="user.estado === 'activo'"
-                            class="btn btn-danger btn-sm" 
-                            (click)="disableUser(user)">
-                      <i class="bi bi-person-x-fill"></i> Desactivar
-                    </button>
-                    <button *ngIf="user.estado === 'inactivo'"
-                            class="btn btn-success btn-sm" 
-                            (click)="enableUser(user)">
-                      <i class="bi bi-person-check-fill"></i> Activar
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-          <div *ngIf="users.length === 0" class="text-center py-3">
-            No hay usuarios registrados
-          </div>
+  <!-- Filtros -->
+  <div class="card mb-4">
+    <div class="card-body">
+      <h5 class="card-title">Filtros</h5>
+      <div class="row g-3">
+        <div class="col-md-4">
+          <label class="form-label">Buscar</label>
+          <input type="text" class="form-control" [(ngModel)]="searchTerm" placeholder="Nombre o correo" (ngModelChange)="calcularPaginacion()">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">Rol</label>
+          <select class="form-select" [(ngModel)]="filterRole" (ngModelChange)="calcularPaginacion()">
+            <option value="">Todos</option>
+            <option value="2">Administrador</option>
+            <option value="1">Usuario</option>
+          </select>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">Estado</label>
+          <select class="form-select" [(ngModel)]="filterStatus" (ngModelChange)="calcularPaginacion()">
+            <option value="">Todos</option>
+            <option value="active">Activo</option>
+            <option value="inactive">Inactivo</option>
+          </select>
+        </div>
+        <div class="col-md-2 d-flex align-items-end">
+          <button class="btn btn-secondary w-100" (click)="clearFilters()">
+            <i class="bi bi-x-circle me-1"></i> Limpiar
+          </button>
         </div>
       </div>
     </div>
   </div>
+  
+  <!-- Loading spinner -->
+  <div *ngIf="loading" class="d-flex justify-content-center my-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Cargando...</span>
+    </div>
+  </div>
+  
+  <!-- Users table -->
+  <div class="card" *ngIf="!loading">
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Nombre</th>
+              <th>Correo</th>
+              <th>Rol</th>
+              <th>Estado</th>
+              <th>Fecha Registro</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let user of paginaActual; let i = index" [ngClass]="getRowClass(user)">
+              <td>{{ (pagina-1) * registros + i + 1 }}</td>
+              <td>{{ user.name }}</td>
+              <td>{{ user.email }}</td>
+              <td>
+                <span class="badge" [ngClass]="user.rol === '2' ? 'bg-primary' : 'bg-info'">
+                  {{ getRoleName(user.rol) }}
+                </span>
+              </td>
+              <td>
+                <span class="badge" [ngClass]="user.estado === 'activo' ? 'bg-success' : 'bg-danger'">
+                  {{ getStatusText(user.estado) }}
+                </span>
+              </td>
+              <td>{{ formatDate(user.created_at) }}</td>
+              <td>
+                <div class="action-buttons">
+                  <!-- Editar usuario -->
+                  <button class="btn btn-warning action-button" (click)="navigateToEdit(user)" title="Editar usuario">
+                    <i class="bi bi-pencil-fill me-1"></i> Editar
+                  </button>
+                  
+                  <!-- Activar/Desactivar usuario -->
+                  <button *ngIf="user.estado === 'activo'" class="btn btn-danger action-button" (click)="disableUser(user)" 
+                          title="Desactivar usuario">
+                    <i class="bi bi-person-x-fill me-1"></i> Desactivar
+                  </button>
+                  <button *ngIf="user.estado === 'ban'" class="btn btn-success action-button" (click)="enableUser(user)" 
+                          title="Activar usuario">
+                    <i class="bi bi-person-check-fill me-1"></i> Activar
+                  </button>
+                  
+                  <!-- Cambiar rol -->
+                  <button *ngIf="user.rol !== '2'" class="btn btn-primary action-button" (click)="promoteToAdmin(user)" 
+                          title="Hacer administrador">
+                    <i class="bi bi-arrow-up-circle-fill me-1"></i> Hacer Admin
+                  </button>
+                  <button *ngIf="user.rol === '2'" class="btn btn-secondary action-button" (click)="demoteToUser(user)" 
+                          title="Hacer usuario regular">
+                    <i class="bi bi-arrow-down-circle-fill me-1"></i> Hacer Usuario
+                  </button>
+
+                  <button 
+                  *ngIf="isRegularUser(user)" 
+                  class="btn btn-sm btn-info action-button" 
+                  title="Cambiar a Invitado"
+                  (click)="changeToGuest(user)">
+                  <i class="bi bi-person-badge"></i> Invitado
+                </button>
+
+                <button 
+                *ngIf="isGuestUser(user)" 
+                class="btn btn-info action-button" 
+                (click)="demoteToUser(user)" 
+                title="Hacer Usuario regular">
+                <i class="bi bi-person-fill me-1"></i> Hacer Usuario
+              </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        
+        <!-- Mensaje si no hay usuarios -->
+        <div *ngIf="paginaActual.length === 0" class="text-center py-3">
+          No hay usuarios disponibles que coincidan con los filtros.
+        </div>
+        
+        <!-- Paginación simple -->
+        <div class="d-flex justify-content-between align-items-center p-2" *ngIf="filteredUsers.length > 0">
+          <div>
+            <select class="form-select form-select-sm" style="width: auto" (change)="cambiarRegistros($event)">
+              <option value="5" [selected]="registros === 5">5 por página</option>
+              <option value="10" [selected]="registros === 10">10 por página</option>
+              <option value="15" [selected]="registros === 15">15 por página</option>
+            </select>
+          </div>
+          
+          <div>
+            <span>
+              Página {{ pagina }} de {{ totalPaginas }} ({{ filteredUsers.length }} registros)
+            </span>
+          </div>
+
+          <div>
+            <button class="btn btn-sm btn-outline-primary me-2" [disabled]="pagina === 1" (click)="anterior()">
+              <i class="bi bi-chevron-left"></i> Anterior
+            </button>
+            <button class="btn btn-sm btn-outline-primary" [disabled]="pagina === totalPaginas" (click)="siguiente()">
+              Siguiente <i class="bi bi-chevron-right"></i>
+            </button>
+          </div>
+        </div>
+        
+        <!-- Indicador de actualización -->
+        <div class="text-center p-2" *ngIf="actualizando">
+          <div class="spinner-grow spinner-grow-sm text-primary me-1" role="status"></div>
+          <span class="text-muted">Actualizando datos...</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

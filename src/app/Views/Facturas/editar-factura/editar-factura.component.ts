@@ -32,7 +32,6 @@ export class EditarFacturaComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // Verificar si el usuario es administrador
     if (!this.isAdmin()) {
       this.toastr.warning('No tienes permiso para acceder a esta página');
       this.router.navigate(['/facturas']);
@@ -41,7 +40,6 @@ export class EditarFacturaComponent implements OnInit {
     
     this.initForm();
     
-    // Obtener ID de la URL
     this.route.params.subscribe(params => {
       if (params['id']) {
         this.facturaId = +params['id'];
@@ -53,7 +51,6 @@ export class EditarFacturaComponent implements OnInit {
     });
   }
   
-  // Verificar si el usuario es administrador
   isAdmin(): boolean {
     const userRole = this.authService.getUserRole();
     return Number(userRole) === 2;
@@ -92,7 +89,6 @@ export class EditarFacturaComponent implements OnInit {
   
   onSubmit(): void {
     if (this.facturaForm.invalid) {
-      // Marcar todos los campos como touched para mostrar errores
       Object.keys(this.facturaForm.controls).forEach(key => {
         this.facturaForm.get(key)?.markAsTouched();
       });

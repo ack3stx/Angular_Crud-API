@@ -1,0 +1,105 @@
+<div class="container mt-4">
+  <div class="card shadow">
+    <div class="card-header bg-primary text-white">
+      <h4 class="mb-0">Registrar Nuevo Mantenimiento</h4>
+    </div>
+    <div class="card-body">
+      <!-- Mensaje de error general -->
+      <div *ngIf="error" class="alert alert-danger mb-3">
+        {{ error }}
+      </div>
+      
+      <!-- Formulario -->
+      <form [formGroup]="mantenimientoForm" (ngSubmit)="onSubmit()">
+        <!-- Habitación -->
+        <div class="mb-3">
+          <label for="habitacion_id" class="form-label">Habitación</label>
+          <select 
+            id="habitacion_id" 
+            formControlName="habitacion_id" 
+            class="form-select"
+            [ngClass]="{'is-invalid': campoInvalido('habitacion_id')}"
+          >
+            <option value="">Selecciona una habitación</option>
+            <option *ngFor="let habitacion of habitaciones" [value]="habitacion.id">
+              {{ habitacion.numero_habitacion }} - {{ habitacion.tipo_habitacion }}
+            </option>
+          </select>
+          <div class="invalid-feedback" *ngIf="campoInvalido('habitacion_id')">
+            {{ getMensajeError('habitacion_id') }}
+          </div>
+        </div>
+        
+        <!-- Empleado -->
+        <div class="mb-3">
+          <label for="empleado_id" class="form-label">Empleado Responsable</label>
+          <select 
+            id="empleado_id" 
+            formControlName="empleado_id" 
+            class="form-select"
+            [ngClass]="{'is-invalid': campoInvalido('empleado_id')}"
+          >
+            <option value="">Selecciona un empleado</option>
+            <option *ngFor="let empleado of empleados" [value]="empleado.id">
+              {{ empleado.nombre }} {{ empleado.apellido }}
+            </option>
+          </select>
+          <div class="invalid-feedback" *ngIf="campoInvalido('empleado_id')">
+            {{ getMensajeError('empleado_id') }}
+          </div>
+        </div>
+        
+        <!-- Tipo de Mantenimiento -->
+        <div class="mb-3">
+          <label for="tipo" class="form-label">Tipo de Mantenimiento</label>
+          <select 
+            id="tipo" 
+            formControlName="tipo" 
+            class="form-select"
+            [ngClass]="{'is-invalid': campoInvalido('tipo')}"
+          >
+            <option value="">Selecciona un tipo</option>
+            <option value="correctivo">Correctivo</option>
+            <option value="preventivo">Preventivo</option>
+            <option value="mejora">Mejora</option>
+            <option value="emergencia">Emergencia</option>
+          </select>
+          <div class="invalid-feedback" *ngIf="campoInvalido('tipo')">
+            {{ getMensajeError('tipo') }}
+          </div>
+        </div>
+        
+        <!-- Descripción -->
+        <div class="mb-3">
+          <label for="descripcion" class="form-label">Descripción del Mantenimiento</label>
+          <textarea 
+            id="descripcion" 
+            formControlName="descripcion" 
+            class="form-control"
+            [ngClass]="{'is-invalid': campoInvalido('descripcion')}"
+            rows="4"
+            placeholder="Describe detalladamente el mantenimiento a realizar"
+          ></textarea>
+          <div class="invalid-feedback" *ngIf="campoInvalido('descripcion')">
+            {{ getMensajeError('descripcion') }}
+          </div>
+        </div>
+        
+        <!-- Botones de acción -->
+        <div class="d-flex justify-content-end mt-4">
+          <button type="button" class="btn btn-secondary me-2" (click)="cancelar()">
+            Cancelar
+          </button>
+          <button 
+            type="submit" 
+            class="btn btn-primary" 
+            [disabled]="mantenimientoForm.invalid || submitting"
+          >
+            <span *ngIf="submitting" class="spinner-border spinner-border-sm me-1" role="status"></span>
+            Registrar Mantenimiento
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

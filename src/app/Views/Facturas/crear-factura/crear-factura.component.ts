@@ -21,6 +21,16 @@ export class CrearFacturaComponent implements OnInit {
   loading: boolean = false;
   loadingData: boolean = true;
   error: string | null = null;
+  submitted: boolean = false;
+  reservacionSeleccionada: Reservacion | null = null;
+  
+  // Métodos de pago disponibles
+  metodosPago = [
+    { value: 'efectivo', label: 'Efectivo' },
+    { value: 'tarjeta', label: 'Tarjeta de Crédito/Débito' },
+    { value: 'transferencia', label: 'Transferencia Bancaria' },
+    { value: 'deposito', label: 'Depósito' }
+  ];
 
   constructor(
     private fb: FormBuilder,
@@ -32,7 +42,6 @@ export class CrearFacturaComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // Verificar si el usuario es administrador
     if (!this.isAdmin()) {
       this.toastr.warning('No tienes permiso para acceder a esta página');
       this.router.navigate(['/facturas']);
@@ -41,9 +50,17 @@ export class CrearFacturaComponent implements OnInit {
 
     this.initForm();
     this.cargarReservaciones();
+
+    // Suscribirse a cambios en la reservación seleccionada
+    this.facturaForm.get('reservacion_id')?.valueChanges.subscribe(id => {
+      if (id) {
+        this.actualizarReservacionSeleccionada(id);
+      } else {
+        this.reservacionSeleccionada = null;
+      }
+    });
   }
 
-  // Verificar si el usuario es administrador
   isAdmin(): boolean {
     const userRole = this.authService.getUserRole();
     return Number(userRole) === 2;
@@ -58,12 +75,40 @@ export class CrearFacturaComponent implements OnInit {
     });
   }
 
+  actualizarReservacionSeleccionada(reservacionId: number): void {
+    const reservacion = this.reservaciones.find(r => r.id === Number(reservacionId));
+    this.reservacionSeleccionada = reservacion || null;
+    
+    if (reservacion) {
+      const precioTotal = Number(reservacion.precio_total);
+      const montoPagado = Number(reservacion.monto_pagado || 0);
+      const montoPendiente = precioTotal - montoPagado;
+      
+      // Actualizar validadores para monto_pagado
+      const montoControl = this.facturaForm.get('monto_pagado');
+      if (montoControl) {
+        montoControl.setValidators([
+          Validators.required,
+          Validators.min(0),
+          Validators.max(montoPendiente)
+        ]);
+        montoControl.updateValueAndValidity();
+        
+        // Sugerir monto pendiente como valor por defecto
+        montoControl.setValue(montoPendiente > 0 ? montoPendiente : 0);
+      }
+    }
+  }
+
   cargarReservaciones(): void {
     this.loadingData = true;
     
     this.reservacionService.todaslasreservaciones().subscribe({
       next: (reservaciones) => {
-        this.reservaciones = reservaciones;
+        // Filtrar reservaciones activas y no canceladas
+        this.reservaciones = reservaciones.filter(r => 
+          r.estado_reservacion !== 'Cancelada' && r.estado !== 'Inactivo'
+        );
         this.loadingData = false;
       },
       error: (error) => {
@@ -75,14 +120,50 @@ export class CrearFacturaComponent implements OnInit {
     });
   }
 
+  // Método para verificar si un campo es inválido
+  campoInvalido(campo: string): boolean {
+    const control = this.facturaForm.get(campo);
+    return !!control && control.invalid && (control.dirty || control.touched || this.submitted);
+  }
+
+  // Método para obtener mensaje de error para cada campo
+  getMensajeError(campo: string): string {
+    const control = this.facturaForm.get(campo);
+    if (!control) return '';
+    if (!control.errors) return '';
+
+    const errors = control.errors;
+    
+    if (errors['required']) return 'Este campo es obligatorio';
+    
+    if (campo === 'monto_pagado') {
+      if (errors['min']) return 'El monto no puede ser negativo';
+      if (errors['max']) {
+        return `El monto no puede ser mayor al saldo pendiente ($${errors['max'].max})`;
+      }
+    }
+    
+    return 'Campo inválido';
+  }
+
+  // Calcular el monto pendiente de la reservación seleccionada
+  getMontoPendiente(): number {
+    if (!this.reservacionSeleccionada) return 0;
+    
+    const precioTotal = Number(this.reservacionSeleccionada.precio_total);
+    const montoPagado = Number(this.reservacionSeleccionada.monto_pagado || 0);
+    return precioTotal - montoPagado;
+  }
+
   onSubmit(): void {
+    this.submitted = true;
+    
     if (this.facturaForm.invalid) {
-      // Marcar todos los campos como touched para mostrar errores
       Object.keys(this.facturaForm.controls).forEach(key => {
         this.facturaForm.get(key)?.markAsTouched();
       });
       
-      this.toastr.warning('Por favor completa todos los campos requeridos');
+      this.toastr.warning('Por favor completa todos los campos requeridos correctamente');
       return;
     }
 

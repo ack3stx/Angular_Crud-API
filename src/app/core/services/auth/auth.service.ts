@@ -4,6 +4,7 @@ import { Observable, tap } from 'rxjs';
 import { LoginCredentials } from '../../models/login-credentials';
 import { Router } from '@angular/router';
 import { jwtDecode } from 'jwt-decode';
+import { environment } from '../../../../environments/environment';
 
 interface DecodedToken {
   sub: string;     // ID del usuario
@@ -20,7 +21,8 @@ interface DecodedToken {
   providedIn: 'root',
 })
 export class AuthService {
-  private apiUrl = 'http://127.0.0.1:8000/api/v1';
+
+  private apiUrl = environment.apiUrl + '/v1';
 
   constructor(
     private http: HttpClient,
@@ -33,10 +35,10 @@ export class AuthService {
         if (response.token) {
           localStorage.setItem('token', response.token);
           const role = this.getUserRole();
-          console.log('Role detectado:', role, typeof role); // Debug tipo
+          console.log('Role detectado:', role, typeof role);
           
           if (Number(role) === 3) {
-            console.log('Intentando navegar a admin dashboard...'); // Debug navegación
+            console.log('Intentando navegar a admin dashboard...');
             try {
               const result = await this.router.navigateByUrl('/admin/dashboard2');
               console.log('Navegación exitosa?', result);
@@ -77,12 +79,9 @@ export class AuthService {
   
     try {
       const decoded = jwtDecode<DecodedToken>(token);
-      console.log('Token decodificado:', decoded); // Debug
       const roleNumber = Number(decoded.rol);
-      console.log('Rol convertido a número:', roleNumber); // Debug
       return roleNumber || 0;
     } catch (error) {
-      console.error('Error decodificando token:', error);
       return 0;
     }
   }
@@ -95,5 +94,17 @@ export class AuthService {
     return this.http.post(`${this.apiUrl}/verificar`, data);
   }
 
+  
+  reenviarCodigoVerificacion(email: string) {
+    return this.http.post(`${environment.apiUrl}/v1/reenviar`, { email });
+  }
+
+  ResendVerificationCode(token: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/solicitar-nuevo-token`, { token });
+  }
+
+  ResetNewToken(): Observable<any>{
+    return this.http.post(`${this.apiUrl}/newToken`, {});
+  }
 
 }

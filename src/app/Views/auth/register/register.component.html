@@ -1,29 +1,82 @@
-<div class="register-container">
-  <div class="register-wrapper">
-    <form [formGroup]="FormularioRegister">
-      <h1>Register</h1>
-
-      <div class="input-box">
-        <input type="text" formControlName="name" placeholder="Name">
-        <i class='bx bxs-user'></i>
+<div class="min-vh-100 d-flex justify-content-center align-items-center p-3">
+  <div class="col-12 col-sm-10 col-md-8 col-lg-6 col-xl-5">
+    <div class="card shadow-lg border-0 rounded-3">
+      <div class="card-header bg-primary text-white p-4 text-center">
+        <h3 class="mb-0 fw-bold">
+          <i class="bi bi-person-plus me-2"></i>Crear Cuenta
+        </h3>
       </div>
+      
+      <div class="card-body p-4 p-md-5">
+        <form [formGroup]="FormularioRegister">
+          
+          <!-- Name input -->
+          <div class="mb-4">
+            <label class="form-label" for="name">Nombre</label>
+            <div class="input-group">
+              <span class="input-group-text">
+                <i class="bi bi-person"></i>
+              </span>
+              <input 
+                type="text" 
+                id="name" 
+                class="form-control" 
+                formControlName="name"
+                placeholder="Tu nombre"
+              />
+            </div>
+          </div>
 
-      <div class="input-box">
-        <input type="email" formControlName="email" placeholder="Email">
-        <i class='bx bxs-envelope'></i>
+          <!-- Email input -->
+          <div class="mb-4">
+            <label class="form-label" for="email">Correo Electrónico</label>
+            <div class="input-group">
+              <span class="input-group-text">
+                <i class="bi bi-envelope"></i>
+              </span>
+              <input 
+                type="email" 
+                id="email" 
+                class="form-control" 
+                formControlName="email"
+                placeholder="ejemplo@correo.com"
+              />
+            </div>
+          </div>
+
+          <!-- Password input -->
+          <div class="mb-4">
+            <label class="form-label" for="password">Contraseña</label>
+            <div class="input-group">
+              <span class="input-group-text">
+                <i class="bi bi-key"></i>
+              </span>
+              <input 
+                type="password"
+                id="password" 
+                class="form-control" 
+                formControlName="password"
+                placeholder="Contraseña"
+              />
+            </div>
+          </div>
+
+          <!-- Submit button -->
+          <div class="d-grid gap-2">
+            <button 
+              type="button" 
+              class="btn btn-primary btn-lg" 
+              (click)="onRegister()">
+              Registrarse
+            </button>
+          </div>
+          
+          <!-- Links -->
+          <div class="mt-4 text-center">
+            <p>¿Ya tienes una cuenta? <a routerLink="/login" class="fw-bold text-primary">Iniciar sesión</a></p>
+          </div>
+        </form>
       </div>
-
-      <div class="input-box">
-        <input type="password" formControlName="password" placeholder="Password">
-        <i class='bx bxs-lock-alt'></i>
-      </div>
-
-      <button type="button" class="btn" (click)="onRegister()">Register</button>
-
-      <div class="login-link">
-        <p>Already have an account? <br>
-          <a routerLink="/login" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Login</a></p>
-      </div>
-    </form>
+    </div>
   </div>
 </div>

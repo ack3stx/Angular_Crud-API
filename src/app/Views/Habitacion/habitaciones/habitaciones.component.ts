@@ -33,25 +33,21 @@ export class HabitacionesComponent implements OnInit {
     this.loadHabitaciones();
   }
 
-  // Método para obtener las habitaciones de la página actual
   get paginaActual() {
     const indice = (this.pagina - 1) * this.registros;
     return this.habitaciones.slice(indice, indice + this.registros);
   }
 
-  // Método para calcular el total de páginas
   get totalPaginas() {
     return Math.ceil(this.habitaciones.length / this.registros);
   }
 
-  // Método para ir a la página siguiente
   siguiente() {
     if (this.pagina < this.totalPaginas) {
       this.pagina++;
     }
   }
 
-  // Método para ir a la página anterior
   anterior() {
     if (this.pagina > 1) {
       this.pagina--;
@@ -102,9 +98,8 @@ export class HabitacionesComponent implements OnInit {
     }
   }
   
-  // Método para cambiar la cantidad de registros por página
   cambiarRegistros(event: any) {
     this.registros = Number(event.target.value);
-    this.pagina = 1; // Volver a la primera página al cambiar
+    this.pagina = 1;
   }
 }

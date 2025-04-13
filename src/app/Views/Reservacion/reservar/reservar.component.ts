@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, AbstractControl, ValidationErrors } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ReservacionesService } from '../../../core/services/Reservaciones/reservaciones.service';
 import { HuespedesService } from '../../../core/services/huespedes/huespedes.service';
@@ -25,6 +25,22 @@ export class ReservarComponent implements OnInit {
   loadingData: boolean = true;
   error: string | null = null;
   precioCalculado: number = 0;
+  submitted: boolean = false;
+  
+  metodosPago = [
+    { value: 'efectivo', label: 'Efectivo' },
+    { value: 'tarjeta', label: 'Tarjeta de Crédito/Débito' },
+    { value: 'transferencia', label: 'Transferencia Bancaria' },
+    { value: 'deposito', label: 'Depósito' }
+  ];
+  
+  estadosReservacion = [
+    { value: 'Pendiente', label: 'Pendiente' },
+    { value: 'Confirmada', label: 'Confirmada' },
+    { value: 'Cancelada', label: 'Cancelada' }
+  ];
+
+  fechaMinima = new Date().toISOString().split('T')[0];
 
   constructor(
     private fb: FormBuilder,
@@ -37,7 +53,6 @@ export class ReservarComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    // Verificar si el usuario es administrador, sino redirigir
     if (!this.isAdmin()) {
       this.toastr.warning('No tienes permiso para acceder a esta página');
       this.router.navigate(['/reservaciones']);
@@ -48,35 +63,87 @@ export class ReservarComponent implements OnInit {
     this.cargarDatos();
   }
 
-  // Verificar si el usuario es administrador
   isAdmin(): boolean {
     const userRole = this.authService.getUserRole();
     return Number(userRole) === 2;
   }
 
-  private initForm() {
-    this.reservacionForm = this.fb.group({
-      fecha_entrada: ['', [Validators.required]],
-      fecha_salida: ['', [Validators.required]],
-      habitacion_id: ['', [Validators.required]],
-      huesped_id: ['', [Validators.required]],
-      precio_total: [0, [Validators.required, Validators.min(0)]],
-      estado_reservacion: ['Pendiente', [Validators.required]],
-      metodo_pago: ['', [Validators.required]],
-      monto_pagado: [0, [Validators.required, Validators.min(0)]],
-      estado: ['Activo'] // Por defecto
-    });
+  fechaValidaValidator(group: FormGroup): ValidationErrors | null {
+    const fechaEntrada = group.get('fecha_entrada')?.value;
+    const fechaSalida = group.get('fecha_salida')?.value;
+    
+    if (!fechaEntrada || !fechaSalida) {
+      return null;
+    }
+    
+    const entrada = new Date(fechaEntrada);
+    const salida = new Date(fechaSalida);
+    
+    if (salida <= entrada) {
+      return { 'fechaInvalida': true };
+    }
+    
+    return null;
+  }
 
-    // Observadores para calcular automáticamente el precio total
+  private initForm() {
+    const hoy = new Date();
+    const maniana = new Date(hoy);
+    maniana.setDate(maniana.getDate() + 1);
+    
+    const fechaHoy = hoy.toISOString().split('T')[0];
+    const fechaManiana = maniana.toISOString().split('T')[0];
+    
+    this.reservacionForm = this.fb.group({
+      fecha_entrada: [fechaHoy, [
+        Validators.required
+      ]],
+      fecha_salida: [fechaManiana, [
+        Validators.required
+      ]],
+      habitacion_id: ['', [
+        Validators.required
+      ]],
+      huesped_id: ['', [
+        Validators.required
+      ]],
+      precio_total: [0, [
+        Validators.required, 
+        Validators.min(0)
+      ]],
+      estado_reservacion: ['Pendiente', [
+        Validators.required
+      ]],
+      metodo_pago: ['', [
+        Validators.required
+      ]],
+      monto_pagado: [0, [
+        Validators.required, 
+        Validators.min(0)
+      ]],
+      estado: ['Activo']
+    }, { validators: this.fechaValidaValidator });
+
     this.reservacionForm.get('fecha_entrada')?.valueChanges.subscribe(() => this.calcularPrecioTotal());
     this.reservacionForm.get('fecha_salida')?.valueChanges.subscribe(() => this.calcularPrecioTotal());
     this.reservacionForm.get('habitacion_id')?.valueChanges.subscribe(() => this.calcularPrecioTotal());
+    
+    this.reservacionForm.get('precio_total')?.valueChanges.subscribe(valor => {
+      const control = this.reservacionForm.get('monto_pagado');
+      if (control) {
+        control.setValidators([
+          Validators.required,
+          Validators.min(0),
+          Validators.max(valor || 0)
+        ]);
+        control.updateValueAndValidity();
+      }
+    });
   }
 
   cargarDatos() {
     this.loadingData = true;
     
-    // Cargar huéspedes
     this.huespedService.getHuespedes().subscribe({
       next: (huespedes) => {
         this.huespedes = huespedes;
@@ -86,7 +153,6 @@ export class ReservarComponent implements OnInit {
         this.error = 'Error al cargar los huéspedes';
         this.loadingData = false;
         console.error('Error:', error);
-        this.toastr.error(this.error);
       }
     });
   }
@@ -101,7 +167,6 @@ export class ReservarComponent implements OnInit {
         this.error = 'Error al cargar las habitaciones';
         this.loadingData = false;
         console.error('Error:', error);
-        this.toastr.error(this.error);
       }
     });
   }
@@ -112,50 +177,87 @@ export class ReservarComponent implements OnInit {
     const habitacionId = this.reservacionForm.get('habitacion_id')?.value;
 
     if (fechaEntrada && fechaSalida && habitacionId) {
-      // Calcular número de días
       const entrada = new Date(fechaEntrada);
       const salida = new Date(fechaSalida);
+      
+      if (entrada >= salida) {
+        this.precioCalculado = 0;
+        this.reservacionForm.patchValue({ precio_total: 0 });
+        return;
+      }
+      
       const diferenciaTiempo = salida.getTime() - entrada.getTime();
       const dias = Math.ceil(diferenciaTiempo / (1000 * 3600 * 24));
 
       if (dias > 0) {
-        // Buscar precio de la habitación
         const habitacion = this.habitaciones.find(h => h.id == habitacionId);
         if (habitacion && habitacion.precio_habitacion) {
-          // Convertir el precio de string a number para evitar error de tipos
           const precioHabitacion = parseFloat(habitacion.precio_habitacion);
           if (!isNaN(precioHabitacion)) {
             this.precioCalculado = precioHabitacion * dias;
-            this.reservacionForm.patchValue({ precio_total: this.precioCalculado });
+            this.reservacionForm.patchValue({ 
+              precio_total: this.precioCalculado,
+              monto_pagado: 0
+            });
           }
         }
       }
     }
   }
 
+  campoInvalido(campo: string): boolean {
+    const control = this.reservacionForm.get(campo);
+    return !!control && control.invalid && (control.dirty || control.touched || this.submitted);
+  }
+
+  getMensajeError(campo: string): string {
+    const control = this.reservacionForm.get(campo);
+    if (!control) return '';
+    if (!control.errors) return '';
+
+    const errors = control.errors;
+    
+    if (errors['required']) return 'Este campo es obligatorio';
+    
+    if (campo === 'fecha_entrada' || campo === 'fecha_salida') {
+      if (errors['min']) return 'La fecha no puede ser anterior a hoy';
+    }
+    
+    if (campo === 'precio_total' || campo === 'monto_pagado') {
+      if (errors['min']) return 'El valor no puede ser negativo';
+      if (errors['max']) return 'El monto pagado no puede ser mayor al precio total';
+    }
+    
+    if (this.reservacionForm.errors && this.reservacionForm.errors['fechaInvalida'] && 
+        (campo === 'fecha_entrada' || campo === 'fecha_salida')) {
+      return 'La fecha de salida debe ser posterior a la fecha de entrada';
+    }
+    
+    return 'Campo inválido';
+  }
+
+  tieneErrorFormulario(error: string): boolean {
+    return this.reservacionForm.errors !== null && this.reservacionForm.errors[error] !== undefined;
+  }
+
   onSubmit() {
+    this.submitted = true;
+    
     if (this.reservacionForm.invalid) {
-      this.toastr.warning('Por favor complete todos los campos requeridos');
-      
-      // Marcar todos los campos como touched para mostrar errores
-      Object.keys(this.reservacionForm.controls).forEach(key => {
-        this.reservacionForm.get(key)?.markAsTouched();
-      });
-      
+      this.error = 'Por favor complete correctamente todos los campos requeridos';
       return;
     }
 
     this.loading = true;
+    this.error = null;
     
-    // Obtener los valores del formulario
     const formValues = this.reservacionForm.value;
     
-    // Crear nuevo objeto reservación con los mismos nombres de la API
     const reservacionData = {
       fecha_entrada: formValues.fecha_entrada,
       fecha_salida: formValues.fecha_salida,
-      habitacion_id: formValues.habitacion_id, // Usar el nombre que espera la API
-      huesped_id: formValues.huesped_id,       // Usar el nombre que espera la API
+      habitacion_id: formValues.habitacion_id, 
+      huesped_id: formValues.huesped_id,       
       precio_total: formValues.precio_total,
       estado_reservacion: formValues.estado_reservacion,
       metodo_pago: formValues.metodo_pago,
@@ -170,10 +272,9 @@ export class ReservarComponent implements OnInit {
         this.router.navigate(['/reservaciones']);
       },
       error: (error) => {
-        this.error = 'Error al crear la reservación';
+        this.error = error.error?.message || 'Error al crear la reservación';
         this.loading = false;
         console.error('Error:', error);
-        this.toastr.error(error.error?.message || this.error);
       }
     });
   }

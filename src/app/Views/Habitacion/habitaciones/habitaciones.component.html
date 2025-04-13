@@ -1,26 +1,22 @@
 <div class="container mt-4">
   <div class="d-flex justify-content-between align-items-center mb-4">
     <h2>Habitaciones</h2>
-    <!-- Mostrar el botón solo si es administrador -->
-    <button *ngIf="isAdmin()" class="btn btn-primary" routerLink="/habitaciones/crear">
+    <button *ngIf="isAdmin()" class="btn btn-primary" routerLink="/habitacion/crear">
       <i class="bi bi-plus-circle"></i> Nueva Habitación
     </button>
   </div>
 
-  <!-- Error message -->
   <div *ngIf="error" class="alert alert-danger alert-dismissible fade show" role="alert">
     {{ error }}
     <button type="button" class="btn-close" (click)="error = ''"></button>
   </div>
 
-  <!-- Loading spinner -->
   <div *ngIf="loading" class="d-flex justify-content-center my-5">
     <div class="spinner-border text-primary" role="status">
       <span class="visually-hidden">Cargando...</span>
     </div>
   </div>
 
-  <!-- Tabla de habitaciones -->
   <div class="card" *ngIf="!loading">
     <div class="card-body">
       <div class="table-responsive">
@@ -35,7 +31,6 @@
             </tr>
           </thead>
           <tbody>
-            <!-- Usamos paginaActual en lugar de habitaciones -->
             <tr *ngFor="let habitacion of paginaActual">
               <td>{{ habitacion.numero_habitacion }}</td>
               <td>{{ habitacion.tipo_habitacion }}</td>
@@ -43,7 +38,7 @@
               <td>{{ habitacion.descripcion_habitacion }}</td>
               <td *ngIf="isAdmin()">
                 <div class="btn-group">
-                  <button class="btn btn-sm btn-warning me-1" [routerLink]="['/habitaciones/editar', habitacion.id]">
+                  <button class="btn btn-sm btn-warning me-1" [routerLink]="['/habitacion/editar', habitacion.id]">
                     <i class="bi bi-pencil"></i> Editar
                   </button>
                   <button class="btn btn-sm btn-danger" (click)="deleteHabitacion(habitacion.id)">
@@ -55,7 +50,6 @@
           </tbody>
         </table>
 
-        <!-- Paginación simple -->
         <div class="d-flex justify-content-between align-items-center p-2" *ngIf="habitaciones.length > 0">
           <div>
             <select class="form-select form-select-sm" style="width: auto" (change)="cambiarRegistros($event)">

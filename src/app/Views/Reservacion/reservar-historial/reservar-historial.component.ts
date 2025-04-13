@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule, NgClass, DatePipe, CurrencyPipe } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -10,6 +10,7 @@ import { Reservacion } from '../../../core/models/reservacion';
 import { Huesped } from '../../../core/models/huesped';
 import { Habitacion } from '../../../core/models/habitacion';
 import { ToastrService } from 'ngx-toastr';
+import { Subscription, interval } from 'rxjs';
 
 @Component({
   selector: 'app-reservar-historial',
@@ -18,7 +19,7 @@ import { ToastrService } from 'ngx-toastr';
   standalone: true,
   imports: [CommonModule, NgClass, DatePipe, CurrencyPipe, RouterModule, FormsModule]
 })
-export class ReservarHistorialComponent implements OnInit {
+export class ReservarHistorialComponent implements OnInit, OnDestroy {
   reservaciones: Reservacion[] = [];
   huespedes: Huesped[] = [];
   habitaciones: Habitacion[] = [];
@@ -30,6 +31,11 @@ export class ReservarHistorialComponent implements OnInit {
   registros: number = 5;
   totalPaginas: number = 0;
   paginaActual: Reservacion[] = [];
+  
+  // Variables para polling
+  private pollingInterval: Subscription | null = null;
+  private readonly POLLING_TIME = 7000; // 7 segundos
+  actualizando: boolean = false;
 
   constructor(
     private reservacionService: ReservacionesService,
@@ -41,25 +47,93 @@ export class ReservarHistorialComponent implements OnInit {
 
   ngOnInit() {
     this.cargarDatos();
+    
+    this.iniciarPolling();
   }
 
-  // Verificar si el usuario es administrador
+  ngOnDestroy() {
+    this.detenerPolling();
+  }
+  
+  iniciarPolling() {
+    this.detenerPolling();
+    
+    this.pollingInterval = interval(this.POLLING_TIME).subscribe(() => {
+      this.actualizarDatos();
+    });
+  }
+  
+  detenerPolling() {
+    if (this.pollingInterval) {
+      this.pollingInterval.unsubscribe();
+      this.pollingInterval = null;
+    }
+  }
+  
+  actualizarDatos() {
+    if (this.actualizando) return;
+    
+    this.actualizando = true;
+    
+    this.reservacionService.todaslasreservaciones().subscribe({
+      next: (nuevasReservaciones) => {
+        if (this.hayDiferenciasEnReservaciones(this.reservaciones, nuevasReservaciones)) {
+          this.reservaciones = nuevasReservaciones;
+          this.calcularPaginacion();
+          this.toastr.info('Se han actualizado las reservaciones', '', {
+            timeOut: 2000,
+            positionClass: 'toast-bottom-right'
+          });
+        }
+        this.actualizando = false;
+      },
+      error: (error) => {
+        console.error('Error al actualizar reservaciones:', error);
+        this.actualizando = false;
+      }
+    });
+  }
+  
+  private hayDiferenciasEnReservaciones(actuales: Reservacion[], nuevas: Reservacion[]): boolean {
+    if (actuales.length !== nuevas.length) return true;
+    
+    const mapaActuales = new Map<number, string>();
+    actuales.forEach(res => {
+      if (res.id) mapaActuales.set(res.id, JSON.stringify(res));
+    });
+    
+    for (const nuevaRes of nuevas) {
+      if (!nuevaRes.id) continue;
+      
+      const reservaActualStr = mapaActuales.get(nuevaRes.id);
+      
+      if (!reservaActualStr) return true;
+      
+      // Comparación completa usando JSON.stringify para detectar cualquier cambio
+      const nuevaResStr = JSON.stringify(nuevaRes);
+      if (reservaActualStr !== nuevaResStr) {
+        console.log(`Cambio detectado en reservación ID ${nuevaRes.id}`);
+        return true;
+      }
+    }
+    
+    return false;
+  }
+
   isAdmin(): boolean {
     const userRole = this.authService.getUserRole();
-    return Number(userRole) === 2; // 2 representa el rol de administrador
+    return Number(userRole) === 2;
   }
 
-  // Verificar si el usuario es cliente regular
   isUser(): boolean {
     const userRole = this.authService.getUserRole();
-    return Number(userRole) === 3; // 3 representa el rol de usuario normal
+    return Number(userRole) === 3;
   }
 
   cargarDatos() {
     this.loading = true;
     this.error = null;
     
-    // Primero cargar los catálogos (huéspedes y habitaciones)
     Promise.all([
       new Promise<void>((resolve, reject) => {
         this.huespedService.getHuespedes().subscribe({
@@ -89,7 +163,6 @@ export class ReservarHistorialComponent implements OnInit {
       })
     ])
     .then(() => {
-      // Una vez cargados los catálogos, cargar las reservaciones
       this.cargarReservaciones();
     })
     .catch((error) => {
@@ -99,7 +172,6 @@ export class ReservarHistorialComponent implements OnInit {
   }
 
   cargarReservaciones() {
-    // Todos los usuarios ven todas las reservaciones
     this.reservacionService.todaslasreservaciones().subscribe({
       next: (data) => {
         this.reservaciones = data;
@@ -114,31 +186,25 @@ export class ReservarHistorialComponent implements OnInit {
     });
   }
 
-  // Método para calcular la paginación
   calcularPaginacion() {
     this.totalPaginas = Math.ceil(this.reservaciones.length / this.registros);
     
-    // Si no hay datos, asegurarse de que hay al menos una página
     if (this.totalPaginas === 0) {
       this.totalPaginas = 1;
     }
     
-    // Asegurarse de que la página actual es válida
     if (this.pagina > this.totalPaginas) {
       this.pagina = this.totalPaginas;
     } else if (this.pagina < 1) {
       this.pagina = 1;
     }
     
-    // Calcular los índices de inicio y fin
     const inicio = (this.pagina - 1) * this.registros;
     const fin = Math.min(inicio + this.registros, this.reservaciones.length);
     
-    // Obtener los elementos de la página actual
     this.paginaActual = this.reservaciones.slice(inicio, fin);
   }
 
-  // Métodos de paginación
   anterior() {
     if (this.pagina > 1) {
       this.pagina--;
@@ -153,14 +219,12 @@ export class ReservarHistorialComponent implements OnInit {
     }
   }
 
-  // Método para cambiar el número de registros por página
   cambiarRegistros(event: any) {
     this.registros = parseInt(event.target.value);
-    this.pagina = 1; // Volver a la primera página
+    this.pagina = 1;
     this.calcularPaginacion();
   }
 
-  // Métodos para obtener datos de las entidades relacionadas
   obtenerNombreHabitacion(habitacionId: number): string {
     const habitacion = this.habitaciones.find(h => h.id === habitacionId);
     return habitacion ? habitacion.tipo_habitacion : 'No disponible';
@@ -190,7 +254,7 @@ export class ReservarHistorialComponent implements OnInit {
   eliminarReservacion(reservacion: Reservacion) {
     const id = reservacion.id!;
     
-    this.reservacionService.cancelarReservacion(id).subscribe({
+    this.reservacionService.EliminarReservacion(id).subscribe({
       next: () => {
         this.toastr.success('Reservación eliminada correctamente');
         this.reservaciones = this.reservaciones.filter(r => r.id !== id);
@@ -201,5 +265,11 @@ export class ReservarHistorialComponent implements OnInit {
         console.error('Error:', error);
       }
     });
+  }
+
+  refrescarDatos() {
+    this.actualizando = true;
+    this.cargarReservaciones();
+    this.iniciarPolling();
   }
 }

@@ -1,0 +1,60 @@
+/* Estilos generales */
+.container {
+    max-width: 1200px;
+  }
+  
+  /* Estilos para la tabla */
+  .table {
+    width: 100%;
+    margin-bottom: 1rem;
+    color: #212529;
+  }
+  
+  /* Estilos para los botones */
+  .btn-primary {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+  }
+  
+  .btn-warning {
+    background-color: #ffc107;
+    border-color: #ffc107;
+    color: #212529;
+  }
+  
+  .btn-danger {
+    background-color: #dc3545;
+    border-color: #dc3545;
+  }
+  
+  .btn-outline-primary {
+    color: #0d6efd;
+    border-color: #0d6efd;
+  }
+  
+  .btn-sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+  }
+  
+  /* Estilos responsivos para pantallas pequeñas */
+  @media (max-width: 768px) {
+    .btn-group {
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .btn-group .btn {
+      margin-right: 0 !important;
+      margin-bottom: 0.5rem;
+    }
+    
+    .d-flex.justify-content-between {
+      flex-direction: column;
+      align-items: center;
+    }
+    
+    .d-flex.justify-content-between > div {
+      margin-bottom: 1rem;
+    }
+  }

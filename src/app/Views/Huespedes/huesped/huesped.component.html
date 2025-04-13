@@ -1,0 +1,115 @@
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Huéspedes</h2>
+    <div class="d-flex align-items-center">
+      <!-- Indicador de conexión WebSocket -->
+      <div class="me-3">
+        <span class="badge" [ngClass]="isConnected ? 'bg-success' : 'bg-warning'">
+          <i class="bi" [ngClass]="isConnected ? 'bi-broadcast' : 'bi-broadcast-pin'"></i>
+          {{ isConnected ? 'Conectado' : 'Desconectado' }}
+        </span>
+        <small class="text-muted ms-2" *ngIf="lastUpdate">
+          Última actualización: {{ lastUpdate }}
+        </small>
+      </div>
+      
+      <!-- Mostrar el botón solo si es administrador -->
+      <button *ngIf="isAdmin()" class="btn btn-primary" routerLink="/huespedes/crear">
+        <i class="bi bi-plus-circle"></i> Nuevo Huésped
+      </button>
+    </div>
+  </div>
+
+  <!-- Error message -->
+  <div *ngIf="error" class="alert alert-danger alert-dismissible fade show" role="alert">
+    {{ error }}
+    <button type="button" class="btn-close" (click)="error = ''"></button>
+  </div>
+
+  <!-- Loading spinner -->
+  <div *ngIf="loading" class="d-flex justify-content-center my-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Cargando...</span>
+    </div>
+  </div>
+
+  <!-- Tabla de huéspedes -->
+  <div class="card" *ngIf="!loading">
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Nombre</th>
+              <th>Apellido</th>
+              <th>Teléfono</th>
+              <th>Dirección</th>
+              <th>Correo</th>
+              <th *ngIf="isAdmin()">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let huesped of paginaActual; let i = index">
+              <td>{{ (pagina-1) * registros + i + 1 }}</td>
+              <td>{{ huesped.nombre }}</td>
+              <td>{{ huesped.apellido }}</td>
+              <td>{{ huesped.telefono }}</td>
+              <td>{{ huesped.direccion }}</td>
+              <td>{{ huesped.correo }}</td>
+              <td *ngIf="isAdmin()">
+                <div class="btn-group">
+                  <button class="btn btn-sm btn-warning me-1" 
+                          [routerLink]="['/huespedes/editar', huesped.id]"
+                          title="Editar huésped">
+                    <i class="bi bi-pencil"></i> Editar
+                  </button>
+                  <button class="btn btn-sm btn-danger" 
+                          (click)="eliminarHuesped(huesped.id!)"
+                          title="Eliminar huésped">
+                    <i class="bi bi-trash"></i> Eliminar
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- Mensaje si no hay huéspedes -->
+        <div *ngIf="paginaActual.length === 0" class="text-center py-3">
+          No hay huéspedes disponibles.
+        </div>
+
+        <!-- Paginación -->
+        <div class="d-flex justify-content-between align-items-center p-2" *ngIf="huespedes.length > 0">
+          <div>
+            <select class="form-select form-select-sm" style="width: auto" (change)="cambiarRegistros($event)">
+              <option value="5" [selected]="registros === 5">5 por página</option>
+              <option value="10" [selected]="registros === 10">10 por página</option>
+              <option value="25" [selected]="registros === 25">25 por página</option>
+            </select>
+          </div>
+          
+          <div>
+            <span>
+              Página {{ pagina }} de {{ totalPaginas }} ({{ huespedes.length }} registros)
+            </span>
+          </div>
+
+          <div>
+            <button class="btn btn-sm btn-outline-primary me-2" 
+                    [disabled]="pagina === 1" 
+                    (click)="anterior()">
+              <i class="bi bi-chevron-left"></i> Anterior
+            </button>
+            <button class="btn btn-sm btn-outline-primary" 
+                    [disabled]="pagina === totalPaginas" 
+                    (click)="siguiente()">
+              Siguiente <i class="bi bi-chevron-right"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
