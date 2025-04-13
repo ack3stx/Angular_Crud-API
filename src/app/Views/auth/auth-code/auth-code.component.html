@@ -1,0 +1,60 @@
+<div class="container">
+  <div class="row justify-content-center mt-5">
+    <div class="col-md-6">
+      <div class="card shadow">
+        <div class="card-body">
+          <h3 class="text-center mb-4">Verificación de cuenta</h3>
+          
+          <!-- Error message -->
+          <div *ngIf="error" class="alert alert-danger mb-3">
+            {{ error }}
+            
+            <!-- Botón para solicitar nuevo código cuando el enlace ha expirado -->
+            <div *ngIf="error.includes('enlace ha expirado') || error.includes('El enlace ha expirado')" class="mt-3">
+              <button class="btn btn-primary w-100" 
+                     [disabled]="resendingCode" 
+                     (click)="resendVerificationCode()">
+                <span *ngIf="resendingCode" class="spinner-border spinner-border-sm me-2"></span>
+                Solicitar nuevo código de verificación
+              </button>
+            </div>
+          </div>
+          
+          <!-- Success message -->
+          <div *ngIf="success" class="alert alert-success alert-dismissible fade show" role="alert">
+            {{ success }}
+            <button type="button" class="btn-close" (click)="success = ''"></button>
+          </div>
+  
+          <form [formGroup]="verificationForm" (ngSubmit)="onSubmit()">
+            <div class="mb-4">
+              <label class="form-label">Código de Verificación</label>
+              <input type="text" 
+                     class="form-control form-control-lg text-center" 
+                     formControlName="code"
+                     maxlength="6"
+                     placeholder="Ingrese el código de 6 dígitos">
+              <div *ngIf="verificationForm.get('code')?.errors?.['required'] && verificationForm.get('code')?.touched" 
+                   class="text-danger">
+                El código es requerido
+              </div>
+              <div *ngIf="verificationForm.get('code')?.errors?.['minlength']" 
+                   class="text-danger">
+                El código debe tener 6 dígitos
+              </div>
+            </div>
+  
+            <div class="d-grid">
+              <button type="submit" 
+                     class="btn btn-primary"
+                     [disabled]="verificationForm.invalid || loading">
+                <span *ngIf="loading" class="spinner-border spinner-border-sm me-2"></span>
+                Verificar código
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

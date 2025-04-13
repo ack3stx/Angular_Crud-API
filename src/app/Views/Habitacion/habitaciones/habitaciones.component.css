@@ -1,0 +1,21 @@
+.table th {
+  background-color: #f8f9fa;
+  font-weight: 600;
+}
+
+.card {
+  border: none;
+  box-shadow: 0 0 15px rgba(0,0,0,0.1);
+  border-radius: 10px;
+}
+
+.form-select {
+  min-width: 120px;
+}
+
+@media (max-width: 768px) {
+  .d-flex {
+    flex-direction: column;
+    gap: 1rem;
+  }
+}

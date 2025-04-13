@@ -1,0 +1,109 @@
+<div class="container mt-4">
+  <div class="card shadow">
+    <div class="card-header bg-primary text-white">
+      <h4 class="mb-0">Crear Nueva Habitación</h4>
+    </div>
+    <div class="card-body">
+      <!-- Mensaje de error general -->
+      <div *ngIf="error" class="alert alert-danger mb-3">
+        {{ error }}
+      </div>
+      
+      <form [formGroup]="habitacionForm" (ngSubmit)="onSubmit()">
+        <!-- Número de Habitación -->
+        <div class="mb-3">
+          <label for="numero_habitacion" class="form-label">Número de Habitación *</label>
+          <input 
+            type="text" 
+            id="numero_habitacion" 
+            formControlName="numero_habitacion" 
+            class="form-control"
+            [ngClass]="{'is-invalid': campoInvalido('numero_habitacion')}"
+            placeholder="Ej: 101"
+          >
+          <div class="invalid-feedback" *ngIf="campoInvalido('numero_habitacion')">
+            {{ getMensajeError('numero_habitacion') }}
+          </div>
+          <div class="text-danger mt-1" *ngIf="tieneErrorServidor('numero_habitacion')">
+            {{ getErrorServidor('numero_habitacion') }}
+          </div>
+        </div>
+        
+        <!-- Tipo de Habitación -->
+        <div class="mb-3">
+          <label for="tipo_habitacion" class="form-label">Tipo de Habitación *</label>
+          <input 
+            type="text" 
+            id="tipo_habitacion" 
+            formControlName="tipo_habitacion" 
+            class="form-control"
+            [ngClass]="{'is-invalid': campoInvalido('tipo_habitacion')}"
+            placeholder="Ej: Individual, Doble, Suite"
+          >
+          <div class="invalid-feedback" *ngIf="campoInvalido('tipo_habitacion')">
+            {{ getMensajeError('tipo_habitacion') }}
+          </div>
+          <div class="text-danger mt-1" *ngIf="tieneErrorServidor('tipo_habitacion')">
+            {{ getErrorServidor('tipo_habitacion') }}
+          </div>
+        </div>
+        
+        <!-- Precio de Habitación -->
+        <div class="mb-3">
+          <label for="precio_habitacion" class="form-label">Precio de Habitación *</label>
+          <div class="input-group">
+            <span class="input-group-text">$</span>
+            <input 
+              type="text" 
+              id="precio_habitacion" 
+              formControlName="precio_habitacion" 
+              class="form-control"
+              [ngClass]="{'is-invalid': campoInvalido('precio_habitacion')}"
+              placeholder="Ej: 100.50"
+            >
+            <div class="invalid-feedback" *ngIf="campoInvalido('precio_habitacion')">
+              {{ getMensajeError('precio_habitacion') }}
+            </div>
+          </div>
+          <div class="text-danger mt-1" *ngIf="tieneErrorServidor('precio_habitacion')">
+            {{ getErrorServidor('precio_habitacion') }}
+          </div>
+        </div>
+        
+        <!-- Descripción de Habitación -->
+        <div class="mb-3">
+          <label for="descripcion_habitacion" class="form-label">Descripción de Habitación *</label>
+          <textarea 
+            id="descripcion_habitacion" 
+            formControlName="descripcion_habitacion" 
+            class="form-control"
+            [ngClass]="{'is-invalid': campoInvalido('descripcion_habitacion')}"
+            rows="3"
+            placeholder="Ingresa una descripción detallada de la habitación"
+          ></textarea>
+          <div class="invalid-feedback" *ngIf="campoInvalido('descripcion_habitacion')">
+            {{ getMensajeError('descripcion_habitacion') }}
+          </div>
+          <div class="text-danger mt-1" *ngIf="tieneErrorServidor('descripcion_habitacion')">
+            {{ getErrorServidor('descripcion_habitacion') }}
+          </div>
+        </div>
+        
+        <!-- Botones de acción -->
+        <div class="d-flex justify-content-end mt-4">
+          <button type="button" class="btn btn-secondary me-2" (click)="cancelar()">
+            Cancelar
+          </button>
+          <button 
+            type="submit" 
+            class="btn btn-primary" 
+            [disabled]="habitacionForm.invalid || loading"
+          >
+            <span *ngIf="loading" class="spinner-border spinner-border-sm me-1" role="status"></span>
+            Crear Habitación
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,25 @@
+.btn-outline-primary {
+    color: #0d6efd;
+    border-color: #0d6efd;
+  }
+  
+  .btn-outline-primary:hover {
+    color: #fff;
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+  }
+  
+  .table {
+    margin-bottom: 0;
+  }
+  
+  @media (max-width: 768px) {
+    .d-flex.justify-content-between {
+      flex-direction: column;
+      align-items: center;
+    }
+    
+    .d-flex.justify-content-between > div {
+      margin-bottom: 1rem;
+    }
+  }

@@ -1,0 +1,15 @@
+.modal {
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+  
+  .badge {
+    padding: 0.5rem 0.75rem;
+  }
+  
+  .table td {
+    vertical-align: middle;
+  }
+  
+  .btn-group {
+    white-space: nowrap;
+  }

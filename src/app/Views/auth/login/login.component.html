@@ -1,29 +1,83 @@
-<div class="login-container">
-  <div class="login-wrapper">
-    <form [formGroup]="FormularioLogin">
-      <h1>Login</h1>
-
-      <div class="input-box">
-        <input type="email" formControlName="email" placeholder="Email">
-        <i class='bx bxs-user'></i>
+<div class="min-vh-100 d-flex justify-content-center align-items-center p-3">
+  <div class="col-12 col-sm-10 col-md-8 col-lg-6 col-xl-5">
+    <div class="card shadow-lg border-0 rounded-3">
+      <div class="card-header bg-primary text-white p-4 text-center">
+        <h3 class="mb-0 fw-bold">
+          <i class="bi bi-box-arrow-in-right me-2"></i>Iniciar Sesión
+        </h3>
       </div>
+      
+      <div class="card-body p-4 p-md-5">
+        <form [formGroup]="FormularioLogin" (ngSubmit)="onlogin()">
+          
+          <!-- Email input -->
+          <div class="mb-4">
+            <label class="form-label" for="email">Correo Electrónico</label>
+            <div class="input-group">
+              <span class="input-group-text">
+                <i class="bi bi-envelope"></i>
+              </span>
+              <input 
+                type="email" 
+                id="email" 
+                class="form-control" 
+                formControlName="email"
+                placeholder="ejemplo@correo.com"
+                [ngClass]="{'is-invalid': emailInvalid}"
+              />
+              <div class="invalid-feedback" *ngIf="emailInvalid">
+                <span *ngIf="FormularioLogin.get('email')?.errors?.['required']">El correo es obligatorio</span>
+                <span *ngIf="FormularioLogin.get('email')?.errors?.['email']">Formato de correo inválido</span>
+              </div>
+            </div>
+          </div>
 
-      <div class="input-box">
-        <input type="password" formControlName="password" placeholder="Password">
-        <i class='bx bxs-lock-alt'></i>
+          <!-- Password input -->
+          <div class="mb-4">
+            <label class="form-label" for="password">Contraseña</label>
+            <div class="input-group">
+              <span class="input-group-text">
+                <i class="bi bi-key"></i>
+              </span>
+              <input 
+                type="password" 
+                id="password" 
+                class="form-control" 
+                formControlName="password"
+                placeholder="Contraseña"
+                [ngClass]="{'is-invalid': passwordInvalid}"
+              />
+              <div class="invalid-feedback" *ngIf="passwordInvalid">
+                <span *ngIf="FormularioLogin.get('password')?.errors?.['required']">La contraseña es obligatoria</span>
+                <span *ngIf="FormularioLogin.get('password')?.errors?.['minlength']">La contraseña debe tener al menos 8 caracteres</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Submit button -->
+          <div class="d-grid gap-2">
+            <button 
+              type="submit" 
+              class="btn btn-primary btn-lg" 
+              [disabled]="loading"
+            >
+              <span *ngIf="loading" class="spinner-border spinner-border-sm me-2" role="status"></span>
+              Iniciar Sesión
+            </button>
+          </div>
+          
+          <!-- Links -->
+          <div class="mt-4 text-center">
+            <p>¿No tienes cuenta? <a routerLink="/register" class="fw-bold text-primary">Regístrate aquí</a></p>
+          </div>
+
+          <div class="mt-4 text-center">
+            <a href="http://localhost:8000/reenviar-verificacion" class="fw-bold text-primary">
+              Reenviar Código De verificación
+            </a>
+          </div>
+        </form>
       </div>
-
-      <div class="remember-forget">
-        <label><input type="checkbox">Remember me</label>
-        <a href="#">Forgot password?</a>
-      </div>
-
-      <button type="button" class="btn" (click)="onlogin()">Login</button>
-
-      <div class="register-link">
-        <p>Don't have an account? <br>
-          <a routerLink="/register" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Register</a></p>
-      </div>
-    </form>
+    </div>
   </div>
 </div>

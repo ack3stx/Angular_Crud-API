@@ -1,0 +1,203 @@
+<div class="container mt-4">
+  <div class="card shadow">
+    <div class="card-header bg-primary text-white">
+      <h4 class="mb-0">Actualizar Reservación</h4>
+    </div>
+    <div class="card-body">
+      <!-- Spinner de carga -->
+      <div *ngIf="loadingData" class="text-center my-5">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Cargando...</span>
+        </div>
+        <p class="mt-2">Cargando información de la reservación...</p>
+      </div>
+      
+      <!-- Mensaje de error general -->
+      <div *ngIf="error" class="alert alert-danger mb-3">
+        {{ error }}
+      </div>
+      
+      <!-- Error de fecha a nivel de formulario -->
+      <div *ngIf="submitted && tieneErrorFormulario('fechaInvalida')" class="alert alert-warning mb-3">
+        La fecha de salida debe ser posterior a la fecha de entrada
+      </div>
+      
+      <!-- Formulario -->
+      <form *ngIf="!loadingData" [formGroup]="reservacionForm" (ngSubmit)="onSubmit()">
+        <div class="row">
+          <!-- Huésped -->
+          <div class="col-md-6 mb-3">
+            <label for="huesped_id" class="form-label">Huésped</label>
+            <select 
+              id="huesped_id" 
+              formControlName="huesped_id" 
+              class="form-select"
+              [ngClass]="{'is-invalid': campoInvalido('huesped_id')}"
+            >
+              <option value="">Seleccione un huésped</option>
+              <option *ngFor="let huesped of huespedes" [value]="huesped.id">
+                {{ huesped.nombre }} {{ huesped.apellido }}
+              </option>
+            </select>
+            <div class="invalid-feedback" *ngIf="campoInvalido('huesped_id')">
+              {{ getMensajeError('huesped_id') }}
+            </div>
+          </div>
+          
+          <!-- Habitación -->
+          <div class="col-md-6 mb-3">
+            <label for="habitacion_id" class="form-label">Habitación</label>
+            <select 
+              id="habitacion_id" 
+              formControlName="habitacion_id" 
+              class="form-select"
+              [ngClass]="{'is-invalid': campoInvalido('habitacion_id')}"
+            >
+              <option value="">Seleccione una habitación</option>
+              <option *ngFor="let habitacion of habitaciones" [value]="habitacion.id">
+                {{ habitacion.numero_habitacion }} - {{ habitacion.tipo_habitacion }} (${{ habitacion.precio_habitacion }}/noche)
+              </option>
+            </select>
+            <div class="invalid-feedback" *ngIf="campoInvalido('habitacion_id')">
+              {{ getMensajeError('habitacion_id') }}
+            </div>
+          </div>
+        </div>
+        
+        <div class="row">
+          <!-- Fecha de entrada -->
+          <div class="col-md-6 mb-3">
+            <label for="fecha_entrada" class="form-label">Fecha de entrada</label>
+            <input 
+              type="date" 
+              id="fecha_entrada" 
+              formControlName="fecha_entrada" 
+              class="form-control"
+              [ngClass]="{'is-invalid': campoInvalido('fecha_entrada') || tieneErrorFormulario('fechaInvalida')}"
+            >
+            <div class="invalid-feedback" *ngIf="campoInvalido('fecha_entrada')">
+              {{ getMensajeError('fecha_entrada') }}
+            </div>
+          </div>
+          
+          <!-- Fecha de salida -->
+          <div class="col-md-6 mb-3">
+            <label for="fecha_salida" class="form-label">Fecha de salida</label>
+            <input 
+              type="date" 
+              id="fecha_salida" 
+              formControlName="fecha_salida" 
+              class="form-control"
+              [ngClass]="{'is-invalid': campoInvalido('fecha_salida') || tieneErrorFormulario('fechaInvalida')}"
+            >
+            <div class="invalid-feedback" *ngIf="campoInvalido('fecha_salida')">
+              {{ getMensajeError('fecha_salida') }}
+            </div>
+          </div>
+        </div>
+        
+        <div class="row">
+          <!-- Estado de reservación -->
+          <div class="col-md-6 mb-3">
+            <label for="estado_reservacion" class="form-label">Estado de reservación</label>
+            <select 
+              id="estado_reservacion" 
+              formControlName="estado_reservacion" 
+              class="form-select"
+              [ngClass]="{'is-invalid': campoInvalido('estado_reservacion')}"
+            >
+              <option *ngFor="let estado of estadosReservacion" [value]="estado.value">
+                {{ estado.label }}
+              </option>
+            </select>
+            <div class="invalid-feedback" *ngIf="campoInvalido('estado_reservacion')">
+              {{ getMensajeError('estado_reservacion') }}
+            </div>
+          </div>
+          
+          <!-- Método de pago -->
+          <div class="col-md-6 mb-3">
+            <label for="metodo_pago" class="form-label">Método de pago</label>
+            <select 
+              id="metodo_pago" 
+              formControlName="metodo_pago" 
+              class="form-select"
+              [ngClass]="{'is-invalid': campoInvalido('metodo_pago')}"
+            >
+              <option value="">Seleccione método de pago</option>
+              <option *ngFor="let metodo of metodosPago" [value]="metodo.value">
+                {{ metodo.label }}
+              </option>
+            </select>
+            <div class="invalid-feedback" *ngIf="campoInvalido('metodo_pago')">
+              {{ getMensajeError('metodo_pago') }}
+            </div>
+          </div>
+        </div>
+        
+        <div class="row">
+          <!-- Precio total -->
+          <div class="col-md-6 mb-3">
+            <label for="precio_total" class="form-label">Precio total</label>
+            <div class="input-group">
+              <span class="input-group-text">$</span>
+              <input 
+                type="number" 
+                id="precio_total" 
+                formControlName="precio_total" 
+                class="form-control"
+                [ngClass]="{'is-invalid': campoInvalido('precio_total')}"
+                readonly
+              >
+              <div class="invalid-feedback" *ngIf="campoInvalido('precio_total')">
+                {{ getMensajeError('precio_total') }}
+              </div>
+            </div>
+            <small class="form-text text-muted">
+              El precio se calcula automáticamente en base a las fechas y habitación seleccionadas.
+            </small>
+          </div>
+          
+          <!-- Monto pagado -->
+          <div class="col-md-6 mb-3">
+            <label for="monto_pagado" class="form-label">Monto pagado</label>
+            <div class="input-group">
+              <span class="input-group-text">$</span>
+              <input 
+                type="number" 
+                id="monto_pagado" 
+                formControlName="monto_pagado" 
+                class="form-control"
+                [ngClass]="{'is-invalid': campoInvalido('monto_pagado')}"
+                [max]="reservacionForm.get('precio_total')?.value || 0"
+                [min]="0"
+                step="0.01"
+              >
+              <div class="invalid-feedback" *ngIf="campoInvalido('monto_pagado')">
+                {{ getMensajeError('monto_pagado') }}
+              </div>
+            </div>
+            <small class="form-text text-muted">
+              El monto pagado no puede ser mayor al precio total.
+            </small>
+          </div>
+        </div>
+        
+        <!-- Botones de acción -->
+        <div class="d-flex justify-content-end mt-4">
+          <button type="button" class="btn btn-secondary me-2" (click)="cancelar()">
+            Cancelar
+          </button>
+          <button 
+            type="submit" 
+            class="btn btn-primary" 
+            [disabled]="reservacionForm.invalid || loading"
+          >
+            <span *ngIf="loading" class="spinner-border spinner-border-sm me-1" role="status"></span>
+            Actualizar Reservación
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,115 @@
+<div class="container mt-4">
+  <!-- Encabezado con título y botones de acción -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Facturas</h2>
+    <div class="d-flex gap-2">
+      <!-- Botón de nueva factura solo para administradores -->
+      <button *ngIf="isAdmin()" class="btn btn-primary" routerLink="/facturas/crear">
+        <i class="bi bi-plus-circle"></i> Nueva Factura
+      </button>
+      
+      <!-- Botón de actualización manual -->
+    </div>
+  </div>
+
+  <!-- Mensaje de error -->
+  <div *ngIf="error" class="alert alert-danger alert-dismissible fade show" role="alert">
+    {{ error }}
+    <button type="button" class="btn-close" (click)="error = null"></button>
+  </div>
+
+  <!-- Última actualización -->
+  <div *ngIf="lastUpdate" class="mb-2 text-end">
+    <small class="text-muted">Última actualización: {{ lastUpdate }}</small>
+  </div>
+
+  <!-- Loading spinner -->
+  <div *ngIf="loading && facturas.length === 0" class="d-flex justify-content-center my-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Cargando...</span>
+    </div>
+  </div>
+
+  <!-- Tabla de facturas -->
+  <div class="card" *ngIf="!loading || facturas.length > 0">
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead class="table-light">
+            <tr>
+              <th>#</th>
+              <th>No. Reservación</th>
+              <th>Método Pago</th>
+              <th class="text-end">Monto</th>
+              <th class="text-center">Estado</th>
+              <th *ngIf="isAdmin()" class="text-center">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let factura of paginaActual; let i = index">
+              <td>{{ (pagina-1) * registros + i + 1 }}</td>
+              <td>{{ factura.reservacion_id }}</td>
+              <td>{{ factura.metodo_pago }}</td>
+              <td class="text-end">{{ factura.monto_pagado | currency }}</td>
+              <td class="text-center">
+                <span [ngClass]="{
+                  'badge rounded-pill text-bg-success': factura.estado === 'Pagada',
+                  'badge rounded-pill text-bg-warning': factura.estado === 'Pendiente',
+                  'badge rounded-pill text-bg-danger': factura.estado === 'Cancelada'
+                }">
+                  {{ factura.estado }}
+                </span>
+              </td>
+              <td *ngIf="isAdmin()" class="text-center">
+                <div class="d-flex justify-content-center gap-2">
+                  <!-- Botones más grandes y con mejor diseño -->
+                  <a class="btn btn-primary" 
+                     [routerLink]="['/facturas/editar', factura.id]"
+                     title="Editar factura">
+                    <i class="bi bi-pencil-fill"></i> Editar
+                  </a>
+                  <button class="btn btn-danger"
+                          (click)="eliminarFactura(factura.id!)"
+                          title="Eliminar factura">
+                    <i class="bi bi-trash-fill"></i> Eliminar
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- Mensaje si no hay facturas -->
+        <div *ngIf="paginaActual.length === 0" class="alert alert-info text-center my-3">
+          <i class="bi bi-info-circle me-2"></i> No hay facturas disponibles.
+        </div>
+
+        <!-- Paginación -->
+        <div class="d-flex justify-content-between align-items-center p-3 bg-light rounded" *ngIf="facturas.length > 0">
+          <div>
+            <select class="form-select" style="width: auto" (change)="cambiarRegistros($event)">
+              <option value="5" [selected]="registros === 5">5 por página</option>
+              <option value="10" [selected]="registros === 10">10 por página</option>
+              <option value="25" [selected]="registros === 25">25 por página</option>
+            </select>
+          </div>
+          
+          <div>
+            <span class="badge bg-secondary">
+              Página {{ pagina }} de {{ totalPaginas }} ({{ facturas.length }} registros)
+            </span>
+          </div>
+
+          <div class="btn-group">
+            <button class="btn btn-outline-primary" [disabled]="pagina === 1" (click)="anterior()">
+              <i class="bi bi-chevron-left"></i> Anterior
+            </button>
+            <button class="btn btn-outline-primary" [disabled]="pagina === totalPaginas" (click)="siguiente()">
+              Siguiente <i class="bi bi-chevron-right"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

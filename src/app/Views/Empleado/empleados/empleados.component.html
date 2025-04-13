@@ -1,0 +1,105 @@
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h2>Empleados</h2>
+      <!-- Mostrar el botón solo si es administrador -->
+      <button *ngIf="isAdmin()" class="btn btn-primary" routerLink="/empleados/crear">
+        <i class="bi bi-plus-circle"></i> Nuevo Empleado
+      </button>
+    </div>
+  
+    <!-- Error message -->
+    <div *ngIf="error" class="alert alert-danger alert-dismissible fade show" role="alert">
+      {{ error }}
+      <button type="button" class="btn-close" (click)="error = ''"></button>
+    </div>
+  
+    <!-- Loading spinner -->
+    <div *ngIf="loading" class="d-flex justify-content-center my-5">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Cargando...</span>
+      </div>
+    </div>
+  
+    <!-- Tabla de empleados -->
+    <div class="card" *ngIf="!loading">
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>Apellido</th>
+                <th>Email</th>
+                <th>Teléfono</th>
+                <th>Dirección</th>
+                <th>Estado</th>
+                <th *ngIf="isAdmin()">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Usamos paginaActual para mostrar solo los de la página actual -->
+              <tr *ngFor="let empleado of paginaActual" [ngClass]="{'table-secondary': !isEmpleadoActivo(empleado.estado)}">
+                <td>{{ empleado.nombre }}</td>
+                <td>{{ empleado.apellido }}</td>
+                <td>{{ empleado.correo }}</td>
+                <td>{{ empleado.telefono }}</td>
+                <td>{{ empleado.direccion }}</td>
+                <td>
+                  <span [ngClass]="isEmpleadoActivo(empleado.estado) ? 'badge bg-success' : 'badge bg-danger'">
+                    {{ empleado.estado }}
+                  </span>
+                </td>
+                <td *ngIf="isAdmin()">
+                  <div class="btn-group">
+                    <!-- Solo mostrar botones si el empleado está activo -->
+                    <button class="btn btn-sm btn-warning me-1" 
+                            [routerLink]="isEmpleadoActivo(empleado.estado) ? ['/empleados/editar', empleado.id] : null"
+                            [ngClass]="{'disabled': !isEmpleadoActivo(empleado.estado)}" 
+                            [title]="isEmpleadoActivo(empleado.estado) ? 'Editar' : 'No se puede editar un empleado inactivo'">
+                      <i class="bi bi-pencil"></i> Editar
+                    </button>
+                    <button class="btn btn-sm btn-danger" 
+                            (click)="deleteEmpleado(empleado)"
+                            [ngClass]="{'disabled': !isEmpleadoActivo(empleado.estado)}"
+                            [title]="isEmpleadoActivo(empleado.estado) ? 'Eliminar' : 'No se puede eliminar un empleado inactivo'">
+                      <i class="bi bi-trash"></i> Eliminar
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+  
+          <!-- Paginación simple -->
+          <div class="d-flex justify-content-between align-items-center p-2" *ngIf="empleados.length > 0">
+            <div>
+              <select class="form-select form-select-sm" style="width: auto" (change)="cambiarRegistros($event)">
+                <option value="5" [selected]="registros === 5">5 por página</option>
+                <option value="10" [selected]="registros === 10">10 por página</option>
+                <option value="15" [selected]="registros === 15">15 por página</option>
+              </select>
+            </div>
+            
+            <div>
+              <span>
+                Página {{ pagina }} de {{ totalPaginas }} ({{ empleados.length }} registros)
+              </span>
+            </div>
+  
+            <div>
+              <button class="btn btn-sm btn-outline-primary me-2" [disabled]="pagina === 1" (click)="anterior()">
+                <i class="bi bi-chevron-left"></i> Anterior
+              </button>
+              <button class="btn btn-sm btn-outline-primary" [disabled]="pagina === totalPaginas" (click)="siguiente()">
+                Siguiente <i class="bi bi-chevron-right"></i>
+              </button>
+            </div>
+          </div>
+          
+          <div *ngIf="empleados.length === 0" class="text-center py-3">
+            No hay empleados disponibles.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>

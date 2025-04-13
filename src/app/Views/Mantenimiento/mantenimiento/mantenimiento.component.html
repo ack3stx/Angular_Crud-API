@@ -1,0 +1,89 @@
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Mantenimientos</h2>
+    <!-- Mostrar el botón solo si es administrador -->
+    <button *ngIf="isAdmin()" class="btn btn-primary" routerLink="/mantenimientos/crear">
+      <i class="bi bi-plus-circle"></i> Nuevo Mantenimiento
+    </button>
+  </div>
+
+  <!-- Error message -->
+  <div *ngIf="error" class="alert alert-danger alert-dismissible fade show" role="alert">
+    {{ error }}
+    <button type="button" class="btn-close" (click)="error = ''"></button>
+  </div>
+
+  <!-- Loading spinner -->
+  <div *ngIf="loading" class="d-flex justify-content-center my-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Cargando...</span>
+    </div>
+  </div>
+
+  <!-- Tabla de mantenimientos -->
+  <div class="card" *ngIf="!loading">
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>Habitación</th>
+              <th>Empleado</th>
+              <th>Descripción</th>
+              <th>Tipo</th>
+              <th *ngIf="isAdmin()">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let mantenimiento of paginaActual">
+              <td>{{ getNumeroHabitacion(mantenimiento.habitacion_id) }}</td>
+              <td>{{ getNombreEmpleado(mantenimiento.empleado_id) }}</td>
+              <td>{{ mantenimiento.descripcion }}</td>
+              <td>{{ mantenimiento.tipo }}</td>
+              <td *ngIf="isAdmin()">
+                <div class="btn-group">
+                  <button class="btn btn-sm btn-warning me-1" [routerLink]="['/mantenimientos/editar', mantenimiento.id]">
+                    <i class="bi bi-pencil"></i> Editar
+                  </button>
+                  <button class="btn btn-sm btn-danger" (click)="eliminarMantenimiento(mantenimiento.id)">
+                    <i class="bi bi-trash"></i> Eliminar
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- Paginación simple -->
+        <div class="d-flex justify-content-between align-items-center p-2" *ngIf="mantenimientos.length > 0">
+          <div>
+            <select class="form-select form-select-sm" style="width: auto" (change)="cambiarRegistros($event)">
+              <option value="5" [selected]="registros === 5">5 por página</option>
+              <option value="10" [selected]="registros === 10">10 por página</option>
+              <option value="15" [selected]="registros === 15">15 por página</option>
+            </select>
+          </div>
+          
+          <div>
+            <span>
+              Página {{ pagina }} de {{ totalPaginas }} ({{ mantenimientos.length }} registros)
+            </span>
+          </div>
+
+          <div>
+            <button class="btn btn-sm btn-outline-primary me-2" [disabled]="pagina === 1" (click)="anterior()">
+              <i class="bi bi-chevron-left"></i> Anterior
+            </button>
+            <button class="btn btn-sm btn-outline-primary" [disabled]="pagina === totalPaginas" (click)="siguiente()">
+              Siguiente <i class="bi bi-chevron-right"></i>
+            </button>
+          </div>
+        </div>
+        
+        <div *ngIf="paginaActual.length === 0" class="text-center py-3">
+          No hay mantenimientos disponibles.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

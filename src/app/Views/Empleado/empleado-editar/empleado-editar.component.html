@@ -1,0 +1,119 @@
+<div class="container mt-4">
+  <div class="card shadow">
+    <div class="card-header bg-primary text-white">
+      <h4 class="mb-0">Editar Empleado</h4>
+    </div>
+    <div class="card-body">
+      <!-- Spinner de carga -->
+      <div *ngIf="loading" class="text-center my-5">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Cargando...</span>
+        </div>
+        <p class="mt-2">Cargando información del empleado...</p>
+      </div>
+      
+      <!-- Mensaje de error general -->
+      <div *ngIf="error" class="alert alert-danger mb-3">
+        {{ error }}
+      </div>
+      
+      <!-- Formulario -->
+      <form *ngIf="!loading" [formGroup]="empleadoForm" (ngSubmit)="onSubmit()">
+        <!-- Nombre -->
+        <div class="mb-3">
+          <label for="nombre" class="form-label">Nombre</label>
+          <input 
+            type="text" 
+            id="nombre" 
+            formControlName="nombre" 
+            class="form-control"
+            [ngClass]="{'is-invalid': campoInvalido('nombre')}"
+            placeholder="Ej: Juan"
+          >
+          <div class="invalid-feedback" *ngIf="campoInvalido('nombre')">
+            {{ getMensajeError('nombre') }}
+          </div>
+        </div>
+        
+        <!-- Apellido -->
+        <div class="mb-3">
+          <label for="apellido" class="form-label">Apellido</label>
+          <input 
+            type="text" 
+            id="apellido" 
+            formControlName="apellido" 
+            class="form-control"
+            [ngClass]="{'is-invalid': campoInvalido('apellido')}"
+            placeholder="Ej: Pérez"
+          >
+          <div class="invalid-feedback" *ngIf="campoInvalido('apellido')">
+            {{ getMensajeError('apellido') }}
+          </div>
+        </div>
+        
+        <!-- Dirección -->
+        <div class="mb-3">
+          <label for="direccion" class="form-label">Dirección</label>
+          <input 
+            type="text" 
+            id="direccion" 
+            formControlName="direccion" 
+            class="form-control"
+            [ngClass]="{'is-invalid': campoInvalido('direccion')}"
+            placeholder="Ej: Calle Principal 123, Ciudad"
+          >
+          <div class="invalid-feedback" *ngIf="campoInvalido('direccion')">
+            {{ getMensajeError('direccion') }}
+          </div>
+        </div>
+        
+        <!-- Teléfono -->
+        <div class="mb-3">
+          <label for="telefono" class="form-label">Teléfono</label>
+          <input 
+            type="text" 
+            id="telefono" 
+            formControlName="telefono" 
+            class="form-control"
+            [ngClass]="{'is-invalid': campoInvalido('telefono')}"
+            placeholder="Ej: 5555555555 (10 dígitos)"
+          >
+          <div class="invalid-feedback" *ngIf="campoInvalido('telefono')">
+            {{ getMensajeError('telefono') }}
+          </div>
+        </div>
+        
+        <!-- Correo Electrónico -->
+        <div class="mb-3">
+          <label for="correo" class="form-label">Correo Electrónico</label>
+          <input 
+            type="email" 
+            id="correo" 
+            formControlName="correo" 
+            class="form-control"
+            [ngClass]="{'is-invalid': campoInvalido('correo')}"
+            placeholder="Ej: juan.perez@ejemplo.com"
+          >
+          <div class="invalid-feedback" *ngIf="campoInvalido('correo')">
+            {{ getMensajeError('correo') }}
+          </div>
+        </div>
+        
+        <!-- Botones de acción -->
+        <div class="d-flex justify-content-end mt-4">
+          <button type="button" class="btn btn-secondary me-2" (click)="cancelar()">
+            Cancelar
+          </button>
+          <button 
+            type="submit" 
+            class="btn btn-primary" 
+            [disabled]="empleadoForm.invalid || loading"
+          >
+            <span *ngIf="loading" class="spinner-border spinner-border-sm me-1" role="status"></span>
+            Actualizar Empleado
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

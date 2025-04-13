@@ -1,0 +1,97 @@
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Registro de Auditoría</h2>
+    <button class="btn btn-outline-primary" (click)="cargarAuditorias()">
+      <i class="bi bi-arrow-clockwise"></i> Actualizar
+    </button>
+  </div>
+
+  <!-- Error message -->
+  <div *ngIf="error" class="alert alert-danger alert-dismissible fade show" role="alert">
+    {{ error }}
+    <button type="button" class="btn-close" (click)="error = ''"></button>
+  </div>
+
+  <!-- Loading spinner -->
+  <div *ngIf="loading" class="d-flex justify-content-center my-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Cargando...</span>
+    </div>
+  </div>
+
+  <!-- Tabla de auditoría -->
+  <div class="card" *ngIf="!loading">
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table">
+          <thead class="table-light">
+            <tr>
+              <th>#</th>
+              <th>Usuario</th>
+              <th>Acción</th>
+              <th>Recurso</th>
+              <th>Fecha</th>
+              <th>Detalles</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let auditoria of paginaActual; let i = index">
+              <td>{{ (pagina-1) * registros + i + 1 }}</td>
+              <td>{{ auditoria.usuario }}</td>
+              <td><span [ngClass]="getClaseBadge(auditoria.accion)">{{ auditoria.accion }}</span></td>
+              <td>{{ auditoria.endpoint }}</td>
+              <td>{{ formatearFecha(auditoria.fecha) }}</td>
+              <td>
+                <button class="btn btn-sm btn-outline-secondary" (click)="toggleDetalles(i)">
+                  {{ expandedRow === i ? 'Ocultar' : 'Ver' }}
+                </button>
+              </td>
+            </tr>
+            <!-- Fila para mostrar detalles -->
+            <tr *ngIf="expandedRow !== null && expandedRow < paginaActual.length">
+              <td colspan="6" class="p-3 bg-light">
+                <div class="mb-3">
+                  <strong>Datos actuales:</strong>
+                  <pre class="mt-2 border p-2 bg-white">{{ paginaActual[expandedRow].datos | json }}</pre>
+                </div>
+                <div *ngIf="paginaActual[expandedRow].datos_previos">
+                  <strong>Datos previos:</strong>
+                  <pre class="mt-2 border p-2 bg-white">{{ paginaActual[expandedRow].datos_previos | json }}</pre>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- Mensaje si no hay auditorías -->
+        <div *ngIf="paginaActual.length === 0" class="text-center py-3">
+          No hay registros de auditoría disponibles.
+        </div>
+
+        <!-- Paginación -->
+        <div class="d-flex justify-content-between align-items-center p-2" *ngIf="auditorias.length > 0">
+          <div>
+            <select class="form-select form-select-sm" style="width: auto" (change)="cambiarRegistros($event)">
+              <option value="10">10 por página</option>
+              <option value="25">25 por página</option>
+              <option value="50">50 por página</option>
+            </select>
+          </div>
+          
+          <div>
+            Página {{ pagina }} de {{ totalPaginas }}
+          </div>
+
+          <div>
+            <button class="btn btn-sm btn-outline-secondary me-2" [disabled]="pagina === 1" (click)="anterior()">
+              Anterior
+            </button>
+            <button class="btn btn-sm btn-outline-secondary" [disabled]="pagina === totalPaginas" (click)="siguiente()">
+              Siguiente
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

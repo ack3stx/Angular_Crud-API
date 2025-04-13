@@ -1,46 +1,133 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <div class="container">
-      <a class="navbar-brand" routerLink="/">Mi App</a>
-      
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-  
-      <div class="collapse navbar-collapse" id="navbarContent">
-        <!-- Menú para usuarios autenticados -->
-        <ul class="navbar-nav me-auto mb-2 mb-lg-0" *ngIf="isLoggedIn()">
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" 
-               role="button" 
-               data-bs-toggle="dropdown" 
-               aria-expanded="false">
-              Productos
-            </a>
-            <ul class="dropdown-menu">
-              <li><a class="dropdown-item" routerLink="/show" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Lista de Productos</a></li>
-              <li><a class="dropdown-item" routerLink="/insert" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Crear Producto</a></li>
-              <li><a class="dropdown-item" routerLink="/update" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Editar Producto</a></li>
-              <li><a class="dropdown-item" routerLink="/delete" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Eliminar Producto</a></li>
-            </ul>
-          </li>
-        </ul>
-  
-        <!-- Botón de logout para usuarios autenticados -->
-        <ul class="navbar-nav ms-auto mb-2 mb-lg-0" *ngIf="isLoggedIn()">
-          <li class="nav-item">
-            <button class="btn btn-outline-light" (click)="logout()">Logout</button>
-          </li>
-        </ul>
-  
-        <!-- Menú para usuarios no autenticados -->
-        <ul class="navbar-nav ms-auto mb-2 mb-lg-0" *ngIf="!isLoggedIn()">
-          <li class="nav-item">
-            <a class="nav-link" routerLink="/login" routerLinkActive="active">Login</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" routerLink="/register" routerLinkActive="active">Register</a>
-          </li>
-        </ul>
-      </div>
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
+  <div class="container-fluid px-md-4">
+    <!-- Logo y título -->
+    <a class="navbar-brand text-primary fw-bold d-flex align-items-center" routerLink="/">
+      <i class="bi bi-building me-2 fs-4"></i> 
+      <span class="d-none d-sm-inline">
+        {{ isLoggedIn() ? (isAdmin() ? 'Panel Administrativo' : (isUser() ? 'Panel Usuario' : 'Acceso Restringido')) : 'Panel Guest' }}
+      </span>
+    </a>
+    
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarContent">
+      <!-- MENÚ ADMINISTRADOR - Con dropdown para agrupar opciones -->
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0" *ngIf="isAdmin()">
+        <!-- Gestión Habitaciones -->
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle py-2 px-3" href="#" role="button" data-bs-toggle="dropdown">
+            <i class="bi bi-door-open me-1"></i> Habitaciones
+          </a>
+          <ul class="dropdown-menu shadow-sm">
+            <li><a class="dropdown-item py-2" routerLink="/habitacion">Ver Habitaciones</a></li>
+            <li><a class="dropdown-item py-2" routerLink="/mantenimientos">Mantenimientos</a></li>
+          </ul>
+        </li>
+        
+        <!-- Gestión Personas -->
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle py-2 px-3" href="#" role="button" data-bs-toggle="dropdown">
+            <i class="bi bi-people me-1"></i> Personas
+          </a>
+          <ul class="dropdown-menu shadow-sm">
+            <li><a class="dropdown-item py-2" routerLink="/empleados">Empleados</a></li>
+            <li><a class="dropdown-item py-2" routerLink="/huespedes">Huéspedes</a></li>
+          </ul>
+        </li>
+        
+        <!-- Gestión Operativa -->
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle py-2 px-3" href="#" role="button" data-bs-toggle="dropdown">
+            <i class="bi bi-clipboard-check me-1"></i> Operaciones
+          </a>
+          <ul class="dropdown-menu shadow-sm">
+            <li><a class="dropdown-item py-2" routerLink="/reservaciones">Reservaciones</a></li>
+            <li><a class="dropdown-item py-2" routerLink="/facturas">Facturas</a></li>
+          </ul>
+        </li>
+        
+        <!-- Administración -->
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle py-2 px-3" href="#" role="button" data-bs-toggle="dropdown">
+            <i class="bi bi-gear me-1"></i> Administración
+          </a>
+          <ul class="dropdown-menu shadow-sm">
+            <li><a class="dropdown-item py-2" routerLink="/admin/users">Gestionar Usuarios</a></li>
+            <li><a class="dropdown-item py-2" routerLink="/admin/auditoria">Sistema</a></li>
+          </ul>
+        </li>
+      </ul>
+
+      <!-- MENÚ USUARIO - Con navegación simplificada -->
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0" *ngIf="isUser()">
+        <!-- Grupo Habitaciones -->
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle py-2 px-3" href="#" role="button" data-bs-toggle="dropdown">
+            <i class="bi bi-door-open me-1"></i> Habitaciones
+          </a>
+          <ul class="dropdown-menu shadow-sm">
+            <li><a class="dropdown-item py-2" routerLink="/habitacion">Ver Habitaciones</a></li>
+            <li><a class="dropdown-item py-2" routerLink="/mantenimientos">Mantenimientos</a></li>
+          </ul>
+        </li>
+        
+        <!-- Grupo Personas -->
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle py-2 px-3" href="#" role="button" data-bs-toggle="dropdown">
+            <i class="bi bi-people me-1"></i> Personas
+          </a>
+          <ul class="dropdown-menu shadow-sm">
+            <li><a class="dropdown-item py-2" routerLink="/empleados">Empleados</a></li>
+            <li><a class="dropdown-item py-2" routerLink="/huespedes">Huéspedes</a></li>
+          </ul>
+        </li>
+        
+        <!-- Operaciones -->
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle py-2 px-3" href="#" role="button" data-bs-toggle="dropdown">
+            <i class="bi bi-clipboard-check me-1"></i> Operaciones
+          </a>
+          <ul class="dropdown-menu shadow-sm">
+            <li><a class="dropdown-item py-2" routerLink="/reservaciones">Reservaciones</a></li>
+            <li><a class="dropdown-item py-2" routerLink="/facturas">Facturas</a></li>
+          </ul>
+        </li>
+      </ul>
+
+      <!-- Usuario y Logout - MODIFICADO PARA DISPOSITIVOS PEQUEÑOS -->
+      <ul class="navbar-nav ms-auto mb-2 mb-lg-0" *ngIf="isLoggedIn()">
+        <!-- Usuario con ícono -->
+        <li class="nav-item mb-2 mb-lg-0">
+          <div class="d-flex align-items-center py-2">
+            <i class="bi bi-person-circle fs-5 me-2"></i>
+            <span>{{ getRoleText() }}</span>
+          </div>
+        </li>
+        
+        <!-- Botón de cerrar sesión - ARREGLADO PARA MÓVILES -->
+        <li class="nav-item mt-1 mt-lg-0">
+          <button class="btn btn-outline-primary btn-lg w-100 d-flex align-items-center justify-content-center" (click)="logout()">
+            <i class="bi bi-box-arrow-right me-2"></i>
+            <span>Cerrar Sesión</span>
+          </button>
+        </li>
+      </ul>
+
+      <!-- Login/Register -->
+      <ul class="navbar-nav ms-auto mb-2 mb-lg-0 d-flex align-items-center" *ngIf="!isLoggedIn()">
+        <li class="nav-item me-2">
+          <a class="btn btn-outline-primary" routerLink="/login" routerLinkActive="active">
+            <i class="bi bi-box-arrow-in-right me-1"></i> Iniciar Sesión
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="btn btn-primary" routerLink="/register" routerLinkActive="active">
+            <i class="bi bi-person-plus me-1"></i> Registrarse
+          </a>
+        </li>
+      </ul>
     </div>
-  </nav>
+  </div>
+</nav>

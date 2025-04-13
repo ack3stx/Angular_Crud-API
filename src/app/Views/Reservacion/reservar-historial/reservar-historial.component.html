@@ -1,0 +1,130 @@
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Reservaciones</h2>
+    <div class="d-flex align-items-center">
+      <button *ngIf="isAdmin()" class="btn btn-primary" routerLink="/reservaciones/crear">
+        <i class="bi bi-plus-circle"></i> Nueva Reservación
+      </button>
+    </div>
+  </div>
+
+  <div class="text-end small text-muted mb-2" *ngIf="!loading">
+    Los datos se actualizan automáticamente cada 7 segundos
+  </div>
+
+  <div *ngIf="error" class="alert alert-danger alert-dismissible fade show" role="alert">
+    {{ error }}
+    <button type="button" class="btn-close" (click)="error = null"></button>
+  </div>
+
+  <div *ngIf="loading" class="d-flex justify-content-center my-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Cargando...</span>
+    </div>
+  </div>
+
+  <div class="card" *ngIf="!loading">
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th class="text-center">#</th>
+              <th>Entrada</th>
+              <th>Salida</th>
+              <th>Habitación</th>
+              <th>Huésped</th>
+              <th class="text-end">Total</th>
+              <th class="text-center">Estado</th>
+              <th>Pago</th>
+              <th *ngIf="isAdmin()" class="text-center">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let reservacion of paginaActual; let i = index" 
+                [ngClass]="{'table-warning': reservacion.estado_reservacion === 'Pendiente', 
+                            'table-success': reservacion.estado_reservacion === 'Confirmada', 
+                            'table-danger': reservacion.estado_reservacion === 'Cancelada'}">
+              <td class="text-center">{{ (pagina-1) * registros + i + 1 }}</td>
+              <td>{{ reservacion.fecha_entrada | date:'dd/MM/yyyy' }}</td>
+              <td>{{ reservacion.fecha_salida | date:'dd/MM/yyyy' }}</td>
+              <td>
+                {{ obtenerNombreHabitacion(reservacion.habitacion_id) }}
+                <small class="text-muted d-block">
+                  No. {{ obtenerNumeroHabitacion(reservacion.habitacion_id) }}
+                </small>
+              </td>
+              <td>
+                {{ obtenerNombreHuesped(reservacion.huesped_id) }}
+                <small class="text-muted d-block">{{ obtenerTelefonoHuesped(reservacion.huesped_id) }}</small>
+              </td>
+              <td class="text-end fw-bold">{{ reservacion.precio_total | currency }}</td>
+              <td class="text-center">
+                <span [ngClass]="{
+                  'badge rounded-pill text-bg-warning': reservacion.estado_reservacion === 'Pendiente', 
+                  'badge rounded-pill text-bg-success': reservacion.estado_reservacion === 'Confirmada', 
+                  'badge rounded-pill text-bg-danger': reservacion.estado_reservacion === 'Cancelada'
+                }">
+                  {{ reservacion.estado_reservacion }}
+                </span>
+              </td>
+              <td>
+                {{ reservacion.metodo_pago }}
+                <span class="d-block small">{{ reservacion.monto_pagado | currency }}</span>
+              </td>
+              <td *ngIf="isAdmin()" class="text-center">
+                <div class="btn-group">
+                  <button class="btn btn-sm btn-warning me-1"
+                          [routerLink]="['/reservaciones/editar', reservacion.id]"
+                          title="Editar reservación">
+                    <i class="bi bi-pencil"></i> Editar
+                  </button>
+                  <button class="btn btn-sm btn-danger"
+                          (click)="confirmarEliminar(reservacion)"
+                          title="Eliminar reservación">
+                    <i class="bi bi-trash"></i> Eliminar
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        
+        <div *ngIf="paginaActual.length === 0" class="text-center py-3">
+          No hay reservaciones disponibles.
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center p-2" *ngIf="reservaciones.length > 0">
+          <div>
+            <select class="form-select form-select-sm" style="width: auto" (change)="cambiarRegistros($event)">
+              <option value="5" [selected]="registros === 5">5 por página</option>
+              <option value="10" [selected]="registros === 10">10 por página</option>
+              <option value="15" [selected]="registros === 15">15 por página</option>
+            </select>
+          </div>
+          
+          <div>
+            <span>
+              Página {{ pagina }} de {{ totalPaginas }} ({{ reservaciones.length }} registros)
+            </span>
+          </div>
+
+          <div>
+            <button class="btn btn-sm btn-outline-primary me-2" [disabled]="pagina === 1" (click)="anterior()">
+              <i class="bi bi-chevron-left"></i> Anterior
+            </button>
+            <button class="btn btn-sm btn-outline-primary" [disabled]="pagina === totalPaginas" (click)="siguiente()">
+              Siguiente <i class="bi bi-chevron-right"></i>
+            </button>
+          </div>
+        </div>
+        
+        <!-- Indicador de actualización -->
+        <div class="text-center p-2" *ngIf="actualizando">
+          <div class="spinner-grow spinner-grow-sm text-primary me-1" role="status"></div>
+          <span class="text-muted">Actualizando datos...</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
